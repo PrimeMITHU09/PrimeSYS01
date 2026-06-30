@@ -176,7 +176,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (googleSignInBtn) {
       googleSignInBtn.addEventListener("click", () => {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => {
+        // Changed to redirect to bypass browser popup blockers (especially on mobile)
+        auth.signInWithRedirect(provider).catch(err => {
           if (loginStatus) loginStatus.textContent = err.message;
           console.error("Firebase Auth Error:", err);
         });
