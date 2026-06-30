@@ -980,7 +980,13 @@ function initProfileSettings(userData) {
     avatarPreview.src = lockedProfilePic;
 
     if (coverInput.value) {
-      coverPreview.style.backgroundImage = `url('${coverInput.value}')`;
+      let finalCoverUrl = coverInput.value;
+      // Auto-convert Google Drive links to direct image links
+      const gDriveMatch = finalCoverUrl.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
+      if (gDriveMatch && gDriveMatch[1]) {
+        finalCoverUrl = `https://drive.google.com/uc?export=view&id=${gDriveMatch[1]}`;
+      }
+      coverPreview.style.backgroundImage = `url('${finalCoverUrl}')`;
     } else {
       coverPreview.style.backgroundImage = "none";
     }
