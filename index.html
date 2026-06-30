@@ -421,11 +421,26 @@
               
               <!-- Sub-tab 1: Player -->
               <div id="musicPlayerContent" class="music-sub-pane">
-                <!-- Curated Playlists -->
-                <div class="music-presets">
-                  <h4 style="margin-bottom: 12px; color: var(--text-muted);">Quick Focus Radios</h4>
+                <!-- Background Audio Radio (HTML5 Native) -->
+                <div class="music-presets" style="margin-bottom: 30px;">
+                  <h4 style="margin-bottom: 12px; color: var(--primary-color);">Background Radio (Mobile Supported 📱)</h4>
+                  <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">These streams play continuously in the background even if your screen is locked.</p>
+                  
+                  <audio id="nativeAudioPlayer" controls style="width: 100%; max-width: 400px; margin-bottom: 15px; border-radius: 30px; outline: none;"></audio>
+                  
                   <div class="preset-pills" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom: 24px;">
-                    <button class="timer-pill yt-preset-btn active" data-vid="jfKfPfyJRdk">🎧 Lofi Beats</button>
+                    <button class="timer-pill native-radio-btn" data-stream="https://streams.ilovemusic.de/iloveradio17.mp3">🎧 Lofi Beats (iLoveRadio)</button>
+                    <button class="timer-pill native-radio-btn" data-stream="https://play.streamafrica.net/lofi">☕ Chillhop Lounge</button>
+                    <button class="timer-pill native-radio-btn" data-stream="https://stream.zeno.fm/f3wvbbqmdg8uv">🌌 Synthwave / Retro</button>
+                    <button id="stopNativeRadioBtn" class="timer-pill" style="background: rgba(239,68,68,0.2); color: #fca5a5;">⏹ Stop</button>
+                  </div>
+                </div>
+
+                <!-- YouTube Playlists -->
+                <div class="music-presets">
+                  <h4 style="margin-bottom: 12px; color: var(--text-muted);">YouTube Videos (Foreground Only)</h4>
+                  <div class="preset-pills" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom: 24px;">
+                    <button class="timer-pill yt-preset-btn active" data-vid="jfKfPfyJRdk">🎧 Lofi Girl</button>
                     <button class="timer-pill yt-preset-btn" data-vid="4xDzrUhVKVA">🎹 Chillhop</button>
                     <button class="timer-pill yt-preset-btn" data-vid="MVPTGNGiI-4">🌌 Synthwave</button>
                     <button class="timer-pill yt-preset-btn" data-vid="lTRiuFIWV54">🌧️ Rain & Nature</button>

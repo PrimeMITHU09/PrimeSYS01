@@ -1498,6 +1498,11 @@ function initMusicModule() {
   }
   
   renderHistory();
+
+  // Initialize other modules
+  if (typeof initConverterModule === 'function') initConverterModule();
+  if (typeof initExpenseModule === 'function') initExpenseModule();
+  if (typeof initMusicLounge === 'function') initMusicLounge();
 }
 
 // --- 3. CONVERTER ---
@@ -1676,7 +1681,6 @@ function initExpenseModule() {
     const title = document.getElementById("expTitle").value.trim();
     const amt = parseFloat(document.getElementById("expAmt").value);
     const type = document.getElementById("expType").value;
-    
     if(!title || isNaN(amt) || amt <= 0) return showToast("Invalid expense details", "error");
     
     db.expenses.unshift({ title, amount: amt, type, date: Date.now() });
@@ -1686,6 +1690,41 @@ function initExpenseModule() {
     document.getElementById("expTitle").value = "";
     document.getElementById("expAmt").value = "";
   });
-
+  
   render();
+}
+
+// --- 5. MUSIC LOUNGE (BACKGROUND RADIO) ---
+function initMusicLounge() {
+  const audioPlayer = document.getElementById("nativeAudioPlayer");
+  const radioBtns = document.querySelectorAll(".native-radio-btn");
+  const stopBtn = document.getElementById("stopNativeRadioBtn");
+
+  if(!audioPlayer) return;
+
+  radioBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Remove active class from all
+      radioBtns.forEach(b => b.classList.remove("active", "pulse"));
+      // Add active to clicked
+      btn.classList.add("active", "pulse");
+      
+      const streamUrl = btn.getAttribute("data-stream");
+      audioPlayer.src = streamUrl;
+      audioPlayer.play().catch(e => {
+        console.error("Audio playback failed:", e);
+        showToast("Auto-play blocked by browser. Click play manually.", "error");
+      });
+      showToast("🎵 Playing Background Radio", "success");
+    });
+  });
+
+  if (stopBtn) {
+    stopBtn.addEventListener("click", () => {
+      audioPlayer.pause();
+      audioPlayer.src = "";
+      radioBtns.forEach(b => b.classList.remove("active", "pulse"));
+      showToast("⏹ Radio Stopped", "info");
+    });
+  }
 }
