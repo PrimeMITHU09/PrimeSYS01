@@ -277,6 +277,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- DASHBOARD CONTROLLER ---
 async function initDashboardFeatures(userData) {
+  // Make Logo Clickable to Refresh Page
+  const dashboardLogo = document.getElementById("dashboardLogo");
+  if (dashboardLogo) {
+    dashboardLogo.addEventListener("click", () => {
+      window.location.reload();
+    });
+  }
+
   const navItems = document.querySelectorAll(".nav-item");
   const tabContents = document.querySelectorAll(".tab-content");
 
