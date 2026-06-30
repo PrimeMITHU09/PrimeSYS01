@@ -79,13 +79,10 @@ async function updateLocalData(updates) {
   // Save to LocalStorage immediately for snappy UI
   localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
 
-  // Sync to Firestore if authenticated
+  // Sync to Firestore if authenticated (Fire and forget, non-blocking)
   if (typeof auth !== 'undefined' && auth.currentUser && typeof firestoreDb !== 'undefined') {
-    try {
-      await firestoreDb.collection("users").doc(auth.currentUser.uid).set(updates, { merge: true });
-    } catch (e) {
-      console.error("Firebase sync error:", e);
-    }
+    firestoreDb.collection("users").doc(auth.currentUser.uid).set(updates, { merge: true })
+      .catch(e => console.error("Firebase sync error:", e));
   }
 
   return currentData;
