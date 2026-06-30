@@ -1039,6 +1039,48 @@ function initProfileSettings(userData) {
   refreshPreview();
   updateSyncStatus(syncStatusLabel, "💾 Synced locally", "success");
 
+  // Edit Mode Toggle Logic
+  const toggleEditBtn = document.getElementById("toggleEditProfileBtn");
+  const saveBtn = document.getElementById("saveProfileBtn");
+  
+  if (toggleEditBtn) {
+    toggleEditBtn.addEventListener("click", () => {
+      const isReadonly = profileForm.classList.contains("readonly-mode");
+      if (isReadonly) {
+        // Enable editing
+        profileForm.classList.remove("readonly-mode");
+        const inputs = profileForm.querySelectorAll("input");
+        inputs.forEach(inp => {
+          if (inp.id !== "profilePicInput") inp.removeAttribute("readonly");
+        });
+        saveBtn.classList.remove("hidden");
+        toggleEditBtn.innerHTML = "❌ Cancel Edit";
+        toggleEditBtn.style.background = "rgba(255,107,107,0.2)";
+        toggleEditBtn.style.color = "#ff6b6b";
+      } else {
+        // Cancel editing
+        profileForm.classList.add("readonly-mode");
+        const inputs = profileForm.querySelectorAll("input");
+        inputs.forEach(inp => {
+          inp.setAttribute("readonly", "true");
+        });
+        saveBtn.classList.add("hidden");
+        toggleEditBtn.innerHTML = "✏️ Edit Profile";
+        toggleEditBtn.style.background = "rgba(255,255,255,0.1)";
+        toggleEditBtn.style.color = "#fff";
+        // Reset values to saved state
+        cellInput.value = details.cellNumber || "";
+        nameInput.value = details.fullName || userData.displayName || "";
+        coverInput.value = details.coverPic || "";
+        fbInput.value = social.fb || "";
+        instaInput.value = social.insta || "";
+        linkedinInput.value = social.linkedin || "";
+        whatsappInput.value = social.whatsapp || "";
+        refreshPreview();
+      }
+    });
+  }
+
   profileForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     updateSyncStatus(syncStatusLabel, "Saving profile locally...", "updating");
@@ -1067,6 +1109,17 @@ function initProfileSettings(userData) {
       
       updateSyncStatus(syncStatusLabel, "💾 Saved Locally", "success");
       refreshPreview();
+
+      // Return to readonly mode
+      profileForm.classList.add("readonly-mode");
+      const inputs = profileForm.querySelectorAll("input");
+      inputs.forEach(inp => inp.setAttribute("readonly", "true"));
+      saveBtn.classList.add("hidden");
+      toggleEditBtn.innerHTML = "✏️ Edit Profile";
+      toggleEditBtn.style.background = "rgba(255,255,255,0.1)";
+      toggleEditBtn.style.color = "#fff";
+      showToast("Profile Updated Successfully!", "success");
+
     } catch (err) {
       console.error("Profile save failed:", err);
       updateSyncStatus(syncStatusLabel, "❌ Save failed", "danger");

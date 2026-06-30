@@ -71,6 +71,31 @@ body {
   100% { transform: translate(60px, 40px) scale(1.1); }
 }
 
+/* Profile Edit Mode */
+.readonly-mode input[readonly] {
+  background: transparent !important;
+  border-color: transparent !important;
+  padding-left: 0 !important;
+  color: var(--text-color) !important;
+  cursor: default;
+}
+.readonly-mode input[readonly]::placeholder {
+  opacity: 0.3;
+}
+.readonly-mode .input-wrapper {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+/* Auth Pages */
+.auth-container {
+  width: 100%;
+  max-width: 1100px;
+  padding: 20px;
+  z-index: 10;
+  transition: var(--transition-smooth);
+}
+
 /* --- APP MAIN CONTAINER --- */
 .app-container {
   width: 100%;

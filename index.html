@@ -596,15 +596,20 @@
 
                 <!-- Profile Edit Form -->
                 <div class="profile-edit-box">
-                  <form id="profileEditForm" class="profile-form">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                    <h3 style="margin:0;">Profile Details</h3>
+                    <button type="button" id="toggleEditProfileBtn" class="submit-btn" style="width:auto; margin:0; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 8px;">✏️ Edit Profile</button>
+                  </div>
+                  
+                  <form id="profileEditForm" class="profile-form readonly-mode">
                     <div class="form-group-row">
                       <div>
                         <label for="cellNumberInput">Cell Number</label>
-                        <input type="tel" id="cellNumberInput" placeholder="+8801XXXXXXXXX">
+                        <input type="tel" id="cellNumberInput" placeholder="+8801XXXXXXXXX" readonly>
                       </div>
                       <div>
                         <label for="profileNameInput">Full Name</label>
-                        <input type="text" id="profileNameInput" placeholder="John Doe" required>
+                        <input type="text" id="profileNameInput" placeholder="John Doe" required readonly>
                       </div>
                     </div>
 
@@ -618,7 +623,7 @@
 
                     <div class="form-group">
                       <label for="coverPicInput">Cover Picture URL <span style="opacity:0.45;font-weight:400;font-size:0.75rem;">(optional)</span></label>
-                      <input type="url" id="coverPicInput" placeholder="https://example.com/cover.jpg">
+                      <input type="url" id="coverPicInput" placeholder="https://example.com/cover.jpg" readonly>
                     </div>
 
                     <div class="divider-text">Social Media Connections</div>
@@ -626,22 +631,22 @@
                     <div class="form-group-row">
                       <div>
                         <label for="fbInput">Facebook Link</label>
-                        <input type="url" id="fbInput" placeholder="https://facebook.com/username">
+                        <input type="url" id="fbInput" placeholder="https://facebook.com/username" readonly>
                       </div>
                       <div>
                         <label for="instaInput">Instagram Link</label>
-                        <input type="url" id="instaInput" placeholder="https://instagram.com/username">
+                        <input type="url" id="instaInput" placeholder="https://instagram.com/username" readonly>
                       </div>
                     </div>
 
                     <div class="form-group-row">
                       <div>
                         <label for="linkedinInput">LinkedIn Link</label>
-                        <input type="url" id="linkedinInput" placeholder="https://linkedin.com/in/username">
+                        <input type="url" id="linkedinInput" placeholder="https://linkedin.com/in/username" readonly>
                       </div>
                       <div>
                         <label for="whatsappInput">WhatsApp Number</label>
-                        <input type="tel" id="whatsappInput" placeholder="+8801XXXXXXXXX">
+                        <input type="tel" id="whatsappInput" placeholder="+8801XXXXXXXXX" readonly>
                       </div>
                     </div>
                     
@@ -660,7 +665,7 @@
                       <button type="button" id="profileLogoutBtn" class="submit-btn" style="width:auto; background: rgba(255,60,60,0.8); padding: 12px 25px;">Log Out</button>
                       <div style="display:flex; align-items:center; gap:15px;">
                         <span class="sync-status" id="profileSyncStatus">☁ Saved to Cloud</span>
-                        <button type="submit" class="submit-btn" id="saveProfileBtn">Save Profile Details</button>
+                        <button type="submit" class="submit-btn hidden" id="saveProfileBtn">Save Profile Details</button>
                       </div>
                     </div>
                   </form>
