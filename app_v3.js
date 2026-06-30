@@ -981,11 +981,19 @@ function initProfileSettings(userData) {
 
     if (coverInput.value) {
       let finalCoverUrl = coverInput.value;
+      
       // Auto-convert Google Drive links to direct image links
       const gDriveMatch = finalCoverUrl.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
       if (gDriveMatch && gDriveMatch[1]) {
         finalCoverUrl = `https://drive.google.com/uc?export=view&id=${gDriveMatch[1]}`;
       }
+      
+      // Auto-convert Imgur page links (e.g. imgur.com/XYZ or imgur.com/a/XYZ) to direct image links
+      const imgurMatch = finalCoverUrl.match(/^https?:\/\/(?:www\.)?imgur\.com\/(?:a\/|gallery\/)?([a-zA-Z0-9]+)/);
+      if (imgurMatch && imgurMatch[1]) {
+        finalCoverUrl = `https://i.imgur.com/${imgurMatch[1]}.jpg`;
+      }
+      
       coverPreview.style.backgroundImage = `url('${finalCoverUrl}')`;
     } else {
       coverPreview.style.backgroundImage = "none";
