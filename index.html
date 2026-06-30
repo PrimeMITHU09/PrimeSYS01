@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#080c14">
+  <link rel="apple-touch-icon" href="icon.svg">
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style.css?v=2.6.2">
   <!-- Firebase SDKs (Compat format for ease of use) -->
@@ -683,5 +687,15 @@
   </div>
 
   <script src="app_v3.js"></script>
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+          console.log('SW Registration failed: ', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
