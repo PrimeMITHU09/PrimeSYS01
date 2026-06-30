@@ -278,7 +278,17 @@ async function initDashboardFeatures(userData) {
   const dashboardLogo = document.getElementById("dashboardLogo");
   if (dashboardLogo) {
     dashboardLogo.addEventListener("click", () => {
-      window.location.reload();
+      // Soft reset to Notepad tab instead of full page reload
+      const notepadBtn = document.querySelector('.nav-item[data-tab="notepadTab"]');
+      if (notepadBtn) {
+        notepadBtn.click();
+      }
+      
+      // Scroll to top to simulate a fresh page
+      const contentPanel = document.querySelector('.content-panel');
+      if (contentPanel) {
+        contentPanel.scrollTo(0, 0);
+      }
     });
   }
 
