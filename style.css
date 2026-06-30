@@ -2159,74 +2159,90 @@ body {
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
- / *   - - -   F I R E B A S E   L O G I N   U I   - - -   * / 
- . l o g i n - w r a p p e r   { 
-     p o s i t i o n :   a b s o l u t e ; 
-     t o p :   0 ;   l e f t :   0 ;   w i d t h :   1 0 0 v w ;   h e i g h t :   1 0 0 v h ; 
-     d i s p l a y :   f l e x ; 
-     j u s t i f y - c o n t e n t :   c e n t e r ; 
-     a l i g n - i t e m s :   c e n t e r ; 
-     z - i n d e x :   9 9 9 9 ; 
-     b a c k g r o u n d :   v a r ( - - b g - c o l o r ) ; 
- } 
- . l o g i n - w r a p p e r . h i d d e n   { 
-     d i s p l a y :   n o n e ; 
- } 
- . l o g i n - c a r d   { 
-     w i d t h :   9 0 % ; 
-     m a x - w i d t h :   4 0 0 p x ; 
-     p a d d i n g :   4 0 p x   3 0 p x ; 
-     d i s p l a y :   f l e x ; 
-     f l e x - d i r e c t i o n :   c o l u m n ; 
-     a n i m a t i o n :   f a d e I n   0 . 5 s   e a s e - o u t   f o r w a r d s ; 
- } 
- . g o o g l e - b t n   { 
-     b a c k g r o u n d :   # f f f f f f ; 
-     c o l o r :   # 3 c 4 0 4 3 ; 
-     b o r d e r :   1 p x   s o l i d   # d a d c e 0 ; 
-     b o r d e r - r a d i u s :   8 p x ; 
-     p a d d i n g :   1 2 p x ; 
-     f o n t - s i z e :   1 r e m ; 
-     f o n t - w e i g h t :   5 0 0 ; 
-     d i s p l a y :   f l e x ; 
-     a l i g n - i t e m s :   c e n t e r ; 
 }
 
- / *   - - -   F I R E B A S E   L O G I N   U I   - - -   * / 
- . l o g i n - w r a p p e r   { 
-     p o s i t i o n :   a b s o l u t e ; 
-     t o p :   0 ;   l e f t :   0 ;   w i d t h :   1 0 0 v w ;   h e i g h t :   1 0 0 v h ; 
-     d i s p l a y :   f l e x ; 
-     j u s t i f y - c o n t e n t :   c e n t e r ; 
-     a l i g n - i t e m s :   c e n t e r ; 
-     z - i n d e x :   9 9 9 9 ; 
-     b a c k g r o u n d :   v a r ( - - b g - c o l o r ) ; 
- } 
- . l o g i n - w r a p p e r . h i d d e n   { 
-     d i s p l a y :   n o n e ; 
- } 
- . l o g i n - c a r d   { 
-     w i d t h :   9 0 % ; 
-     m a x - w i d t h :   4 0 0 p x ; 
-     p a d d i n g :   4 0 p x   3 0 p x ; 
-     d i s p l a y :   f l e x ; 
-     f l e x - d i r e c t i o n :   c o l u m n ; 
-     a n i m a t i o n :   f a d e I n   0 . 5 s   e a s e - o u t   f o r w a r d s ; 
- } 
- . g o o g l e - b t n   { 
-     b a c k g r o u n d :   # f f f f f f ; 
-     c o l o r :   # 3 c 4 0 4 3 ; 
-     b o r d e r :   1 p x   s o l i d   # d a d c e 0 ; 
-     b o r d e r - r a d i u s :   8 p x ; 
-     p a d d i n g :   1 2 p x ; 
-     f o n t - s i z e :   1 r e m ; 
-     f o n t - w e i g h t :   5 0 0 ; 
-     d i s p l a y :   f l e x ; 
-     a l i g n - i t e m s :   c e n t e r ; 
-     j u s t i f y - c o n t e n t :   c e n t e r ; 
-     c u r s o r :   p o i n t e r ; 
-     t r a n s i t i o n :   b a c k g r o u n d   0 . 3 s ,   b o x - s h a d o w   0 . 3 s ; 
- } 
- . g o o g l e - b t n : h o v e r   { 
-  } 
- 
+/* --- FIREBASE LOGIN UI --- */
+.login-wrapper {
+  position: absolute;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  background: var(--bg-color);
+}
+.login-wrapper.hidden {
+  display: none;
+}
+.login-card {
+  width: 90%;
+  max-width: 400px;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+.google-btn {
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.google-btn:hover {
+  background: #f8f9fa;
+  box-shadow: 0 1px 3px rgba(60,64,67,0.3);
+}
+
+/* --- EXTRA MOBILE RESPONSIVENESS (Apple/Android) --- */
+@media (max-width: 600px) {
+  body {
+    overflow-x: hidden;
+  }
+  .app-container {
+    padding: 10px;
+  }
+  .clock-display {
+    font-size: 3rem;
+  }
+  .weather-temp {
+    font-size: 3rem;
+  }
+  .weather-card {
+    padding: 20px;
+    width: 100%;
+  }
+  .timer-circle-container {
+    transform: scale(0.8);
+  }
+  .expense-overview-row, .exp-row {
+    flex-direction: column;
+  }
+  .conv-row {
+    flex-direction: column;
+  }
+  .notepad-workspace {
+    padding: 10px;
+  }
+  .notepad-editor-pane textarea {
+    height: 200px;
+  }
+  .device-info-wrapper {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+  .calc-container-box {
+    padding: 10px;
+  }
+  .calc-screen {
+    font-size: 2.5rem;
+  }
+}
