@@ -975,7 +975,7 @@ function initProfileSettings(userData) {
     emailDisplay.textContent = userData.email || "user@primesys.live";
     phoneDisplay.textContent = cellInput.value ? `📞 ${cellInput.value}` : "";
 
-    const lockedProfilePic = "https://upload.wikimedia.org/wikipedia/commons/e/e3/Amazon_Prime_Logo.svg";
+    const lockedProfilePic = "icon.svg";
     picInput.value = lockedProfilePic;
     avatarPreview.src = lockedProfilePic;
 
