@@ -79,11 +79,7 @@ async function updateLocalData(updates) {
   // Save to LocalStorage immediately for snappy UI
   localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
 
-  // Sync to Firestore if authenticated (Fire and forget, non-blocking)
-  if (typeof auth !== 'undefined' && auth.currentUser && typeof firestoreDb !== 'undefined') {
-    firestoreDb.collection("users").doc(auth.currentUser.uid).set(updates, { merge: true })
-      .catch(e => console.error("Firebase sync error:", e));
-  }
+  // Sync to Firestore is disabled so data stays strictly local per user request.
 
   return currentData;
 }
@@ -136,23 +132,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-          const userDoc = await firestoreDb.collection("users").doc(user.uid).get();
           let dbData = getLocalData();
           
-          if (userDoc.exists) {
-            // Cloud data exists, overwrite local
-            const cloudData = userDoc.data();
-            dbData = { ...dbData, ...cloudData };
-            dbData.displayName = name || "User";
-            dbData.email = user.email || "";
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
-          } else {
-            // First time login, push current local data to cloud
-            dbData.displayName = name || "User";
-            dbData.email = user.email || "";
-            await firestoreDb.collection("users").doc(user.uid).set(dbData);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
-          }
+          // Data fetching from cloud is disabled so local data is not overwritten by other devices/browsers.
+          // The user identity is still maintained locally.
+          dbData.displayName = name || "User";
+          dbData.email = user.email || "";
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
 
           if (dashboardMainContainer) dashboardMainContainer.classList.remove("hidden");
           initDashboardFeatures(dbData);
