@@ -1341,7 +1341,6 @@ function initMusicModule() {
 
   const ytLinkInput = document.getElementById("ytLinkInput");
   const playYtBtn = document.getElementById("playYtBtn");
-  const presetBtns = document.querySelectorAll(".yt-preset-btn");
   const historyList = document.getElementById("musicHistoryList");
   
   let ytPlayer = null;
@@ -1503,25 +1502,10 @@ function initMusicModule() {
     }
   }
 
-  presetBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      presetBtns.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const vid = btn.getAttribute("data-vid");
-      const title = btn.textContent.trim();
-      if(vid) {
-        setVideo(vid);
-        addHistory(title, vid, "vid");
-      }
-    });
-  });
-
   if (playYtBtn && ytLinkInput) {
     playYtBtn.addEventListener("click", () => {
       const url = ytLinkInput.value.trim();
       if(!url) return;
-      
-      presetBtns.forEach(b => b.classList.remove("active"));
       
       let videoId = "";
       if (url.includes("v=")) {
@@ -1555,7 +1539,6 @@ function initMusicModule() {
   // Initialize other modules
   if (typeof initConverterModule === 'function') initConverterModule();
   if (typeof initExpenseModule === 'function') initExpenseModule();
-  if (typeof initMusicLounge === 'function') initMusicLounge();
 }
 
 // --- 3. CONVERTER ---
@@ -1748,36 +1731,3 @@ function initExpenseModule() {
 }
 
 // --- 5. MUSIC LOUNGE (BACKGROUND RADIO) ---
-function initMusicLounge() {
-  const audioPlayer = document.getElementById("nativeAudioPlayer");
-  const radioBtns = document.querySelectorAll(".native-radio-btn");
-  const stopBtn = document.getElementById("stopNativeRadioBtn");
-
-  if(!audioPlayer) return;
-
-  radioBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      // Remove active class from all
-      radioBtns.forEach(b => b.classList.remove("active", "pulse"));
-      // Add active to clicked
-      btn.classList.add("active", "pulse");
-      
-      const streamUrl = btn.getAttribute("data-stream");
-      audioPlayer.src = streamUrl;
-      audioPlayer.play().catch(e => {
-        console.error("Audio playback failed:", e);
-        showToast("Auto-play blocked by browser. Click play manually.", "error");
-      });
-      showToast("🎵 Playing Background Radio", "success");
-    });
-  });
-
-  if (stopBtn) {
-    stopBtn.addEventListener("click", () => {
-      audioPlayer.pause();
-      audioPlayer.src = "";
-      radioBtns.forEach(b => b.classList.remove("active", "pulse"));
-      showToast("⏹ Radio Stopped", "info");
-    });
-  }
-}
