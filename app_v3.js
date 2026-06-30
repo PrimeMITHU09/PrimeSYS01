@@ -122,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const googleSignInBtn = document.getElementById("googleSignInBtn");
   const emailSignInBtn = document.getElementById("emailSignInBtn");
   const emailSignUpBtn = document.getElementById("emailSignUpBtn");
+  const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
   const loginEmail = document.getElementById("loginEmail");
   const loginPassword = document.getElementById("loginPassword");
   const loginStatus = document.getElementById("loginStatus");
@@ -173,14 +174,48 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    // Check for redirect errors (often caused by strict browser privacy settings blocking cross-site cookies)
+    auth.getRedirectResult().catch((error) => {
+      console.error("Redirect Error:", error);
+      if (loginStatus) {
+        loginStatus.textContent = "System Error: " + error.message + " (Try allowing cross-site cookies or use Email Login).";
+      }
+    });
+
+    const googleLoginHelpModal = document.getElementById("googleLoginHelpModal");
+    const googleHelpRetryBtn = document.getElementById("googleHelpRetryBtn");
+    const googleHelpEmailBtn = document.getElementById("googleHelpEmailBtn");
+
     if (googleSignInBtn) {
       googleSignInBtn.addEventListener("click", () => {
+        // Hide help modal if it was open
+        if (googleLoginHelpModal) googleLoginHelpModal.classList.add("hidden");
+        if (loginStatus) loginStatus.textContent = "Opening Google Sign-in...";
+        
         const provider = new firebase.auth.GoogleAuthProvider();
-        // Changed to redirect to bypass browser popup blockers (especially on mobile)
-        auth.signInWithRedirect(provider).catch(err => {
-          if (loginStatus) loginStatus.textContent = err.message;
+        auth.signInWithPopup(provider).catch(err => {
           console.error("Firebase Auth Error:", err);
+          
+          if (err.code === 'auth/popup-blocked') {
+            if (loginStatus) loginStatus.textContent = "";
+            if (googleLoginHelpModal) googleLoginHelpModal.classList.remove("hidden");
+          } else {
+            if (loginStatus) loginStatus.textContent = err.message;
+          }
         });
+      });
+    }
+
+    if (googleHelpRetryBtn) {
+      googleHelpRetryBtn.addEventListener("click", () => {
+        if (googleSignInBtn) googleSignInBtn.click();
+      });
+    }
+
+    if (googleHelpEmailBtn) {
+      googleHelpEmailBtn.addEventListener("click", () => {
+        if (googleLoginHelpModal) googleLoginHelpModal.classList.add("hidden");
+        if (loginEmail) loginEmail.focus();
       });
     }
 
@@ -209,6 +244,26 @@ document.addEventListener("DOMContentLoaded", () => {
         auth.createUserWithEmailAndPassword(email, pwd).catch(err => {
           loginStatus.textContent = err.message;
         });
+      });
+    }
+    
+    if (forgotPasswordBtn) {
+      forgotPasswordBtn.addEventListener("click", () => {
+        const email = loginEmail.value.trim();
+        if (!email) {
+          loginStatus.textContent = "Enter your email address first, then click Forgot Password.";
+          return;
+        }
+        loginStatus.textContent = "Sending reset link...";
+        auth.sendPasswordResetEmail(email)
+          .then(() => {
+            loginStatus.style.color = "var(--primary-color)";
+            loginStatus.textContent = "Password reset email sent! Check your inbox.";
+            setTimeout(() => { loginStatus.style.color = "var(--danger-color)"; loginStatus.textContent = ""; }, 5000);
+          })
+          .catch(err => {
+            loginStatus.textContent = err.message;
+          });
       });
     }
   } else {
@@ -882,6 +937,10 @@ function initProfileSettings(userData) {
 
   const syncStatusLabel = document.getElementById("profileSyncStatus");
   const profileForm = document.getElementById("profileEditForm");
+  const profileUpdatePasswordBtn = document.getElementById("profileUpdatePasswordBtn");
+  const profileNewPassword = document.getElementById("profileNewPassword");
+  const passwordUpdateStatus = document.getElementById("passwordUpdateStatus");
+  const profileLogoutBtn = document.getElementById("profileLogoutBtn");
 
   const details = userData.profileDetails || {};
   cellInput.value = details.cellNumber || "";
@@ -1000,6 +1059,49 @@ function initProfileSettings(userData) {
       saveBtn.disabled = false;
     }
   });
+
+  // Handle Log Out Button
+  if (profileLogoutBtn) {
+    profileLogoutBtn.addEventListener("click", () => {
+      if (typeof auth !== 'undefined') {
+        auth.signOut().then(() => {
+          // Firebase will trigger onAuthStateChanged and hide the dashboard
+        }).catch(err => {
+          console.error("Logout error", err);
+        });
+      }
+    });
+  }
+
+  // Handle Set Password Button
+  if (profileUpdatePasswordBtn) {
+    profileUpdatePasswordBtn.addEventListener("click", () => {
+      const pwd = profileNewPassword.value;
+      if (!pwd || pwd.length < 6) {
+        passwordUpdateStatus.style.color = "var(--danger-color)";
+        passwordUpdateStatus.textContent = "Password must be at least 6 characters.";
+        return;
+      }
+      
+      const user = auth.currentUser;
+      if (user) {
+        passwordUpdateStatus.style.color = "var(--text-secondary)";
+        passwordUpdateStatus.textContent = "Updating...";
+        user.updatePassword(pwd).then(() => {
+          passwordUpdateStatus.style.color = "var(--primary-color)";
+          passwordUpdateStatus.textContent = "Password updated successfully!";
+          profileNewPassword.value = "";
+          setTimeout(() => { passwordUpdateStatus.textContent = ""; }, 4000);
+        }).catch(error => {
+          passwordUpdateStatus.style.color = "var(--danger-color)";
+          passwordUpdateStatus.textContent = error.message;
+        });
+      } else {
+        passwordUpdateStatus.style.color = "var(--danger-color)";
+        passwordUpdateStatus.textContent = "You must be logged in to set a password.";
+      }
+    });
+  }
 }
 
 function updateSyncStatus(element, text, statusType) {

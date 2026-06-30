@@ -43,6 +43,7 @@
           <button id="emailSignInBtn" class="submit-btn" style="flex:1; margin:0; padding:12px; border-radius:8px; font-weight:600;">Sign In</button>
           <button id="emailSignUpBtn" class="submit-btn" style="flex:1; margin:0; padding:12px; border-radius:8px; background: rgba(255,255,255,0.1); font-weight:600;">Sign Up</button>
         </div>
+        <button id="forgotPasswordBtn" style="background:none; border:none; color:var(--primary-color); font-size:0.85rem; cursor:pointer; text-decoration:underline; text-align:right; margin-top:-5px; width:fit-content; align-self:flex-end;">Forgot Password?</button>
       </div>
 
       <div style="text-align:center; margin-bottom: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.5);">
@@ -54,6 +55,18 @@
         Sign in with Google
       </button>
       <div id="loginStatus" style="text-align: center; color: var(--danger-color); margin-top: 15px; font-size: 0.9rem;"></div>
+      
+      <!-- GOOGLE LOGIN HELP MODAL -->
+      <div id="googleLoginHelpModal" class="hidden" style="margin-top: 20px; padding: 15px; border-radius: 12px; background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3);">
+        <h3 style="color: #ff6b6b; font-size: 1.1rem; margin-bottom: 8px; text-align:center;">Popup Blocked! 🛑</h3>
+        <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-bottom: 15px; text-align:center; line-height: 1.4;">
+          Your browser is blocking the Google Sign-in window. 
+          Please click the <b>Popup Blocker Icon</b> in your browser's address bar (top right) and select <b>"Always allow popups"</b>.
+        </p>
+        <button id="googleHelpRetryBtn" class="submit-btn" style="width: 100%; margin-bottom: 8px; padding: 10px;">Try Google Login Again</button>
+        <button id="googleHelpEmailBtn" class="submit-btn" style="width: 100%; background: rgba(255,255,255,0.1); padding: 10px;">Use Email Login Instead</button>
+      </div>
+
     </div>
   </div>
 
@@ -612,10 +625,24 @@
                         <input type="tel" id="whatsappInput" placeholder="+8801XXXXXXXXX">
                       </div>
                     </div>
+                    
+                    <div class="divider-text" style="color: #ff6b6b; border-color: rgba(255,107,107,0.2);">Account Security</div>
+                    <div class="form-group" style="background: rgba(255,107,107,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,107,107,0.1); margin-bottom:20px;">
+                      <label style="color:#ff6b6b;">Create / Change Password</label>
+                      <p style="font-size:0.8rem; opacity:0.8; margin-bottom:10px;">If you logged in with Google, setting a password allows you to log in via Email next time!</p>
+                      <div style="display:flex; gap:10px;">
+                        <input type="password" id="profileNewPassword" placeholder="Enter new password (min 6 chars)" style="flex:1;">
+                        <button type="button" id="profileUpdatePasswordBtn" class="submit-btn" style="width:auto; padding: 10px 20px; background: rgba(255,107,107,0.2); color:#ff6b6b;">Update</button>
+                      </div>
+                      <p id="passwordUpdateStatus" style="font-size:0.8rem; margin-top:8px;"></p>
+                    </div>
 
-                    <div class="profile-save-row">
-                      <span class="sync-status" id="profileSyncStatus">☁ Saved to Cloud</span>
-                      <button type="submit" class="submit-btn" id="saveProfileBtn">Save Profile Details</button>
+                    <div class="profile-save-row" style="justify-content: space-between;">
+                      <button type="button" id="profileLogoutBtn" class="submit-btn" style="width:auto; background: rgba(255,60,60,0.8); padding: 12px 25px;">Log Out</button>
+                      <div style="display:flex; align-items:center; gap:15px;">
+                        <span class="sync-status" id="profileSyncStatus">☁ Saved to Cloud</span>
+                        <button type="submit" class="submit-btn" id="saveProfileBtn">Save Profile Details</button>
+                      </div>
                     </div>
                   </form>
                 </div>
