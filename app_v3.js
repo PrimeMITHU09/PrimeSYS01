@@ -2190,7 +2190,7 @@ function initExportFunctions(userData) {
     dlMp4Btn?.addEventListener("click", () => {
       if(!currentDlUrl) return;
       // Native auto-download using our Custom Node.js Backend
-      const backendUrl = "https://primesys-backend.onrender.com"; // Replace with local testing http://localhost:3000 if needed
+      const backendUrl = "/api"; // Vercel API
       const downloadUrl = `${backendUrl}/download?url=${encodeURIComponent(currentDlUrl)}&format=mp4`;
       
       window.location.href = downloadUrl; // Triggers "Save As" directly!
@@ -2202,7 +2202,7 @@ function initExportFunctions(userData) {
     dlMp3Btn?.addEventListener("click", () => {
       if(!currentDlUrl) return;
       // Native auto-download using our Custom Node.js Backend
-      const backendUrl = "https://primesys-backend.onrender.com"; // Replace with local testing http://localhost:3000 if needed
+      const backendUrl = "/api"; // Vercel API
       const downloadUrl = `${backendUrl}/download?url=${encodeURIComponent(currentDlUrl)}&format=mp3`;
       
       window.location.href = downloadUrl; // Triggers "Save As" directly!
