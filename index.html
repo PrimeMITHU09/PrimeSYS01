@@ -99,14 +99,8 @@
               <span class="nav-icon">📈</span> Daily Tracker
             </button>
 
-            <button class="nav-item" data-tab="musicTab">
-              <span class="nav-icon">🎵</span> Music Lounge
-            </button>
-            <button class="nav-item" data-tab="primePlayerTab">
-              <span class="nav-icon">▶️</span> Prime Player
-            </button>
-            <button class="nav-item" data-tab="downloadTab">
-              <span class="nav-icon">📥</span> Download Video
+            <button class="nav-item" data-tab="mediaTab">
+              <span class="nav-icon">🍿</span> Media & Downloads
             </button>
             <button class="nav-item" data-tab="profileTab">
               <span class="nav-icon">⚙️</span> Settings
@@ -137,97 +131,6 @@
         </aside>
         <!-- Right Content Panels -->
         <section class="content-panel">
-          
-
-          <!-- TAB 4.5: MUSIC LOUNGE -->
-          <div class="tab-content hidden" id="musicTab">
-            <header class="tab-header">
-              <div class="header-title"><h2>Music Lounge</h2></div>
-              <div class="header-desc"><p>Listen to focus Music & play any custom YouTube video while you work.</p></div>
-            </header>
-            
-            <div class="calc-mode-selector" style="margin-bottom: 24px; max-width: 500px; margin-left: 0;">
-              <button class="mode-pill music-sub-tab-btn active" data-subtab="ambientSoundsContent">🎧 Focus Sounds</button>
-              <button class="mode-pill music-sub-tab-btn" data-subtab="musicLibraryContent">📜 Track Library</button>
-            </div>
-
-            <div class="music-wrapper">
-
-              <!-- Sub-tab 1.5: Ambient Sounds -->
-              <div id="ambientSoundsContent" class="music-sub-pane">
-                <div class="ambient-wrapper glass-card" style="padding: 25px; display:flex; flex-direction:column; gap:25px;">
-                  
-                  <!-- Equalizer UI -->
-                  <div class="eq-container" style="background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding: 20px;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:25px; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.05); flex-wrap:wrap; gap:15px;">
-                      <h4 style="margin:0; color:var(--text-primary); letter-spacing:1px; font-size:1rem; text-transform:uppercase;">UHQ Equalizer & Effects</h4>
-                      <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:0.9rem; background:rgba(255,255,255,0.05); padding:8px 16px; border-radius:20px; border:1px solid var(--primary-accent); box-shadow: 0 0 10px var(--accent-glow);">
-                        <span style="opacity:0.9; font-weight:600;">Ambient Focus Mode</span>
-                        <label class="switch" style="margin-left:5px;">
-                          <input type="checkbox" id="ambientSoundToggle">
-                          <span class="slider"></span>
-                        </label>
-                      </label>
-                    </div>
-                    
-                    <div style="display:flex; justify-content:center; gap:30px; align-items:flex-end; height: 120px; margin-bottom:20px;">
-                      <div class="eq-band">
-                        <input type="range" class="eq-slider" id="eqLow" min="-12" max="12" value="0" orient="vertical" style="appearance: slider-vertical; width:20px; height:100px;">
-                        <span style="font-size:0.7rem; color:var(--text-secondary); margin-top:5px; display:block; text-align:center;">Low</span>
-                      </div>
-                      <div class="eq-band">
-                        <input type="range" class="eq-slider" id="eqMid" min="-12" max="12" value="0" orient="vertical" style="appearance: slider-vertical; width:20px; height:100px;">
-                        <span style="font-size:0.7rem; color:var(--text-secondary); margin-top:5px; display:block; text-align:center;">Mid</span>
-                      </div>
-                      <div class="eq-band">
-                        <input type="range" class="eq-slider" id="eqHigh" min="-12" max="12" value="0" orient="vertical" style="appearance: slider-vertical; width:20px; height:100px;">
-                        <span style="font-size:0.7rem; color:var(--text-secondary); margin-top:5px; display:block; text-align:center;">High</span>
-                      </div>
-                    </div>
-                    <div style="text-align:center;">
-                      <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem;">
-                        <input type="checkbox" id="spatialAudioToggle" style="accent-color:var(--primary-accent); width:16px; height:16px;">
-                        Enable Spatial Audio (Dolby Atmos Effect)
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Sub-tab 2: Library -->
-              <div id="musicLibraryContent" class="music-sub-pane hidden">
-                <!-- Music History (Recent Tracks) -->
-                <div class="music-history-container" style="margin-top: 0;">
-                  <h4 style="margin-bottom: 12px; color: var(--text-muted);">🕒 Recent Tracks</h4>
-                  <div id="musicHistoryList" style="display:flex; flex-direction:column; gap:10px; max-height: 500px; overflow-y:auto; padding-right:5px;">
-                    <!-- JS Injected History Items -->
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB 5: CONVERTER -->
-          <!-- NEW DOWNLOAD VIDEO TAB -->
-          <div class="tab-content hidden" id="downloadTab">
-            <header class="tab-header">
-              <div class="header-title"><h2>Video Downloader</h2></div>
-              <div class="header-desc"><p>Paste any supported video link to download it to your device.</p></div>
-            </header>
-            
-            <div class="glass-card" style="padding: 30px; text-align: center; border-radius: 20px;">
-              <div style="font-size: 3rem; margin-bottom: 20px;">⬇️</div>
-              <h3 style="font-size: 1.5rem; margin-bottom: 20px;">Save Media Offline</h3>
-              <div style="display:flex; gap:15px; justify-content:center; max-width: 600px; margin: 0 auto 20px auto;">
-                <input type="text" id="downloadLinkInput" placeholder="Paste video URL here..." style="flex:1; padding: 15px 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: var(--text-primary); font-size: 1rem; outline:none;">
-                <button class="submit-btn" id="startDownloadBtn" style="margin:0; width: auto; padding: 0 30px; border-radius: 30px; font-weight: 600; background: var(--success-color);">
-                  Download
-                </button>
-              </div>
-              <p style="color: var(--text-secondary); font-size: 0.9rem;">Supports YouTube, Facebook, Twitter, and more.</p>
-            </div>
-          </div>
-
           <!-- TAB 7: PROFILE SETTINGS & DEVICE INFO -->
           <div class="tab-content hidden" id="profileTab">
             <header class="tab-header">
@@ -844,8 +747,20 @@
 
         </div> <!-- Closing trackerTab -->
 
-          <!-- TAB 4.5: MUSIC LOUNGE -->
-          <div class="tab-content hidden" id="musicTab">
+          <!-- NEW TAB 5: MEDIA & DOWNLOADS -->
+          <div class="tab-content hidden" id="mediaTab">
+            <header class="tab-header">
+              <div class="header-title"><h2>Media & Downloads</h2></div>
+              <div class="header-desc"><p>Your entertainment and media downloading hub.</p></div>
+            </header>
+            <div class="calc-mode-selector" style="margin-bottom: 24px;">
+              <button class="mode-pill root-sub-tab-btn active" data-subtab="musicTab">🎵 Music Lounge</button>
+              <button class="mode-pill root-sub-tab-btn" data-subtab="primePlayerTab">▶️ Prime Player</button>
+              <button class="mode-pill root-sub-tab-btn" data-subtab="downloadTab">⬇️ Video Downloader</button>
+            </div>
+
+          <!-- SUB-TAB: MUSIC LOUNGE -->
+          <div class="root-sub-tab-pane" id="musicTab">
             <header class="tab-header">
               <div class="header-title"><h2>Music Lounge</h2></div>
               <div class="header-desc"><p>Listen to focus Music & play any custom YouTube video while you work.</p></div>
@@ -881,8 +796,8 @@
             </div>
           </div>
 
-<!-- NEW PRIME PLAYER TAB -->
-          <div class="tab-content hidden" id="primePlayerTab">
+<!-- SUB-TAB: PRIME PLAYER -->
+          <div class="root-sub-tab-pane hidden" id="primePlayerTab">
             <header class="tab-header">
               <div class="header-title"><h2>Prime Player</h2></div>
               <div class="header-desc"><p>Play any custom YouTube video while you work with the exclusive Prime Player.</p></div>
@@ -926,6 +841,27 @@
               </div>
             </div>
           </div>
+
+          <!-- SUB-TAB: DOWNLOADER -->
+          <div class="root-sub-tab-pane hidden" id="downloadTab">
+            <header class="tab-header">
+              <div class="header-title"><h2>Video Downloader</h2></div>
+              <div class="header-desc"><p>Paste any supported video link to download it to your device.</p></div>
+            </header>
+            
+            <div class="glass-card" style="padding: 30px; text-align: center; border-radius: 20px;">
+              <div style="font-size: 3rem; margin-bottom: 20px;">⬇️</div>
+              <h3 style="font-size: 1.5rem; margin-bottom: 20px;">Save Media Offline</h3>
+              <div style="display:flex; gap:15px; justify-content:center; max-width: 600px; margin: 0 auto 20px auto;">
+                <input type="text" id="downloadLinkInput" placeholder="Paste video URL here..." style="flex:1; padding: 15px 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: var(--text-primary); font-size: 1rem; outline:none;">
+                <button class="submit-btn" id="startDownloadBtn" style="margin:0; width: auto; padding: 0 30px; border-radius: 30px; font-weight: 600; background: var(--success-color);">
+                  Download
+                </button>
+              </div>
+              <p style="color: var(--text-secondary); font-size: 0.9rem;">Supports YouTube, Facebook, Twitter, and more.</p>
+            </div>
+          </div>
+        </div> <!-- End of mediaTab -->
 
           </section>
       </div>
