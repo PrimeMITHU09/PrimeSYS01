@@ -33,6 +33,46 @@ app.get('/download', async (req, res) => {
 
 const http = require('http');
 
+app.get('/proxy/hls', (req, res) => {
+  const url = req.query.url;
+  if (!url) return res.status(400).send('No URL');
+
+  const proxyReq = http.request(url, {
+    method: 'GET',
+    headers: { 'Referer': 'http://redforce.live/', 'User-Agent': 'Mozilla/5.0' }
+  }, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    
+    // If it's an m3u8 playlist, we need to rewrite the URIs inside it to also go through our proxy
+    if (url.includes('.m3u8')) {
+      let body = '';
+      proxyRes.on('data', chunk => body += chunk);
+      proxyRes.on('end', () => {
+        // Rewrite relative and absolute URLs
+        const lines = body.split('\n');
+        const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+        
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (line && !line.startsWith('#')) {
+            let targetUrl = line;
+            if (!line.startsWith('http')) {
+              targetUrl = baseUrl + line;
+            }
+            lines[i] = `http://localhost:3000/proxy/hls?url=${encodeURIComponent(targetUrl)}`;
+          }
+        }
+        res.end(lines.join('\n'));
+      });
+    } else {
+      proxyRes.pipe(res);
+    }
+  });
+
+  proxyReq.on('error', (err) => res.status(500).send(err.message));
+  proxyReq.end();
+});
+
 app.get('/api/proxy/stream', (req, res) => {
   const streamId = req.query.id;
   if (!streamId) return res.status(400).json({ error: 'No stream ID provided' });

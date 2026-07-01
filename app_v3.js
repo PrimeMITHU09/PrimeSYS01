@@ -2203,9 +2203,11 @@ function initExportFunctions(userData) {
 function initPrimeTv() {
   const categoryList = document.getElementById("tvCategoryList");
   const channelContainer = document.getElementById("tvChannelContainer");
-  const playerBridge = document.getElementById("tvPlayerBridge");
+  const playerVideo = document.getElementById("tvPlayerVideo");
   const placeholder = document.getElementById("tvPlaceholder");
   const categoryTitle = document.getElementById("tvCurrentCategoryTitle");
+  
+  let hlsInstance = null;
 
   if (!categoryList || !channelContainer || typeof primeTvChannels === 'undefined') return;
 
@@ -2283,16 +2285,38 @@ function initPrimeTv() {
       title.style.textAlign = "center";
       title.style.fontWeight = "500";
 
-      card.onclick = () => {
+      card.onclick = async () => {
         placeholder.style.display = "none";
-        playerBridge.style.display = "block";
+        playerVideo.style.display = "block";
         
-        showToast("Connecting to Local Bridge...", "info");
+        showToast("Connecting to Local Proxy...", "info");
         
-        // This relies on the user running node server.js on their PC!
-        // The iframe will load HTTP inside HTTPS which is allowed ONLY for localhost.
-        // It completely bypasses Redforce blocking Vercel AND Mixed Content blocks!
-        playerBridge.src = `http://localhost:3000/tv_player?id=${ch.StreamId}`;
+        try {
+          // ALWAYS fetch from localhost to bypass Vercel Redforce block
+          const res = await fetch(`http://localhost:3000/api/proxy/stream?id=${ch.StreamId}`);
+          const data = await res.json();
+          
+          if (data.streamUrl) {
+            // Proxied stream URL through localhost to bypass Mixed Content blocks
+            const proxyUrl = `http://localhost:3000/proxy/hls?url=${encodeURIComponent(data.streamUrl)}`;
+            
+            if (Hls.isSupported()) {
+              if (hlsInstance) hlsInstance.destroy();
+              hlsInstance = new Hls();
+              hlsInstance.loadSource(proxyUrl);
+              hlsInstance.attachMedia(playerVideo);
+              hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
+                playerVideo.play();
+                showToast("Playing T SPORTS", "success");
+              });
+            } else if (playerVideo.canPlayType('application/vnd.apple.mpegurl')) {
+              playerVideo.src = proxyUrl;
+              playerVideo.play();
+            }
+          }
+        } catch(e) {
+           showToast("Please start Local Server first", "danger");
+        }
       };
 
       card.appendChild(img);
