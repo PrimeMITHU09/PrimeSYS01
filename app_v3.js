@@ -2087,24 +2087,86 @@ function initBookmarkModule(userData) {
 
 // --- DATA EXPORT (CSV & PDF) ---
 function initExportFunctions(userData) {
+  // Notepad Dropdown Menu Toggle
+  const exportNoteMenuBtn = document.getElementById("exportNoteMenuBtn");
+  const exportNoteMenu = document.getElementById("exportNoteMenu");
+  
+  if (exportNoteMenuBtn && exportNoteMenu) {
+    exportNoteMenuBtn.addEventListener("click", () => {
+      exportNoteMenu.style.display = exportNoteMenu.style.display === "none" ? "block" : "none";
+    });
+    // Hide menu on outside click
+    document.addEventListener("click", (e) => {
+      if (!exportNoteMenuBtn.contains(e.target) && !exportNoteMenu.contains(e.target)) {
+        exportNoteMenu.style.display = "none";
+      }
+    });
+  }
+
+  // Helper to get note content
+  function getNoteData() {
+    return {
+      title: document.getElementById("activeNoteTitle").textContent || "Untitled Note",
+      text: document.getElementById("notepadArea").value || ""
+    };
+  }
+
   // Notepad PDF Export
-  document.getElementById("exportNotePdfBtn")?.addEventListener("click", () => {
+  document.getElementById("exportNotePdf")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (exportNoteMenu) exportNoteMenu.style.display = "none";
     if (!window.jspdf) return showToast("PDF library loading...", "warning");
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    const title = document.getElementById("activeNoteTitle").textContent || "Note";
-    const text = document.getElementById("notepadArea").value || "";
+    const { title, text } = getNoteData();
     
     doc.setFontSize(18);
     doc.text(title, 10, 20);
     doc.setFontSize(12);
     
-    // Split text into array of strings to fit page width
     const splitText = doc.splitTextToSize(text, 180);
     doc.text(splitText, 10, 30);
     
-    doc.save(title + ".pdf");
-    showToast("PDF Exported successfully!", "success");
+    doc.save(title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".pdf");
+    showToast("📄 PDF Exported successfully!", "success");
+  });
+
+  // Notepad TXT Export
+  document.getElementById("exportNoteTxt")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (exportNoteMenu) exportNoteMenu.style.display = "none";
+    const { title, text } = getNoteData();
+    const blob = new Blob([`${title}\n\n${text}`], { type: "text/plain" });
+    const a = document.createElement("a");
+    a.href = window.URL.createObjectURL(blob);
+    a.download = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".txt";
+    a.click();
+    showToast("📝 TXT Exported successfully!", "success");
+  });
+
+  // Notepad MD Export
+  document.getElementById("exportNoteMd")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (exportNoteMenu) exportNoteMenu.style.display = "none";
+    const { title, text } = getNoteData();
+    const blob = new Blob([`# ${title}\n\n${text}`], { type: "text/markdown" });
+    const a = document.createElement("a");
+    a.href = window.URL.createObjectURL(blob);
+    a.download = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".md";
+    a.click();
+    showToast("⬇️ Markdown Exported successfully!", "success");
+  });
+
+  // Full Account Backup (JSON)
+  document.getElementById("exportFullBackupBtn")?.addEventListener("click", () => {
+    const rawData = localStorage.getItem(STORAGE_KEY) || "{}";
+    const blob = new Blob([rawData], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = window.URL.createObjectURL(blob);
+    const date = new Date().toISOString().split('T')[0];
+    a.download = `PrimeSYS_Backup_${date}.json`;
+    a.click();
+    showToast("💾 Full Backup Exported successfully!", "success");
   });
   
   // Expense Tracker CSV Export

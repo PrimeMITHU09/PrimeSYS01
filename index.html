@@ -305,12 +305,21 @@
             <!-- Sub-tab 4: Terminate Session -->
             <div id="terminateSessionContent" class="sub-tab-pane hidden">
               <div class="glass-card" style="padding: 30px; text-align: center; border: 1px solid rgba(239,68,68,0.3);">
-                <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
-                <h3 style="font-size: 1.5rem; color: #ef4444; margin-bottom: 15px;">Danger Zone</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 25px; max-width: 400px; margin-left: auto; margin-right: auto;">
-                  Terminating your session will securely sign you out and clear all local data buffers.
-                </p>
-                <button class="logout-btn" id="logoutBtn" style="width: auto; padding: 12px 30px;">⏻ Terminate Session</button>
+                <!-- BACKUP SECTION -->
+                <div class="glass-card" style="margin-top: 30px; text-align: center; padding: 25px;">
+                  <h3 style="color: #60a5fa; margin-top: 0; margin-bottom: 10px;">💾 Data Backup & Restore</h3>
+                  <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Download a complete offline backup of all your notes, expenses, tasks, and history.</p>
+                  <button class="submit-btn" id="exportFullBackupBtn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); width: auto; padding: 10px 20px; font-size: 0.9rem;">Download Full Backup (JSON)</button>
+                </div>
+                
+                <!-- Danger Zone -->
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
+                  <h3 style="color: #ef4444; margin-bottom: 10px;">Danger Zone</h3>
+                  <p style="color: var(--text-secondary); margin-bottom: 25px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    Terminating your session will securely sign you out and clear all local data buffers.
+                  </p>
+                  <button class="logout-btn" id="logoutBtn" style="width: auto; padding: 12px 30px;">🚪 Terminate Session</button>
+                </div>
               </div>
             </div>
           </div>
@@ -354,8 +363,15 @@
               <div class="notepad-editor-pane">
                 <div class="editor-header">
                   <h3 id="activeNoteTitle">No note selected</h3>
-                  <div style="display:flex; gap:10px; align-items:center;">
-                    <button class="submit-btn hidden" id="exportNotePdfBtn" style="padding: 6px 12px; margin: 0; width: auto; font-size: 0.8rem; background: rgba(255,255,255,0.1);">Export PDF</button>
+                  <div style="display:flex; gap:10px; align-items:center; position: relative;">
+                    <div class="dropdown" style="position: relative; display: inline-block;">
+                      <button class="submit-btn hidden" id="exportNoteMenuBtn" style="padding: 6px 12px; margin: 0; width: auto; font-size: 0.8rem; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5);">Download ⬇️</button>
+                      <div class="dropdown-content hidden" id="exportNoteMenu" style="display: none; position: absolute; right: 0; background-color: rgba(15,23,42,0.95); min-width: 150px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); z-index: 100; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; margin-top: 5px;">
+                        <a href="#" id="exportNotePdf" style="color: white; padding: 10px 15px; text-decoration: none; display: block; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s;">📄 As PDF</a>
+                        <a href="#" id="exportNoteTxt" style="color: white; padding: 10px 15px; text-decoration: none; display: block; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s;">📝 As TXT</a>
+                        <a href="#" id="exportNoteMd" style="color: white; padding: 10px 15px; text-decoration: none; display: block; font-size: 0.85rem; transition: 0.2s;">⬇️ As Markdown</a>
+                      </div>
+                    </div>
                     <button class="delete-note-btn hidden" id="deleteNoteBtn">Delete Note</button>
                   </div>
                 </div>
