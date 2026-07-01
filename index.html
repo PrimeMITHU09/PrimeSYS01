@@ -983,6 +983,7 @@
           <footer class="global-footer">
             <div class="footer-links">
               <a href="#" id="openAboutLink">About PrimeSYS</a>
+              <a href="#" id="openFaqBtn">FAQ / Help</a>
               <a href="#" id="openPrivacyBtn">Privacy Policy</a>
               <a href="#" id="openTermsBtn">Terms of Service</a>
               <a href="#" id="openRefundBtn">Refund / Return Policy</a>
@@ -1077,6 +1078,55 @@
         </div>
         
         <button id="closeAboutModalBtn" class="submit-btn" style="margin-top: 25px; width: 100%; max-width: 200px;">Close</button>
+      </div>
+    </div>
+
+    <!-- FAQ MODAL (Dynamic Accordion) -->
+    <div id="faqModal" class="modal hidden">
+      <div class="modal-content glass-card" style="max-width: 700px; padding: 30px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px; margin-bottom:20px;">
+          <h2 style="margin:0; font-size:1.5rem; color:#fff;">Frequently Asked Questions</h2>
+          <span class="close" id="closeFaqModal" style="font-size:2rem; cursor:pointer;">&times;</span>
+        </div>
+        
+        <div class="faq-accordion" style="max-height: 450px; overflow-y: auto; padding-right: 10px;">
+          
+          <details>
+            <summary>Is my data secure in PrimeSYS?</summary>
+            <div class="faq-content">
+              Yes, absolutely. We use Google Firebase for authentication and database synchronization. Your data is encrypted in transit and securely synced with Google's robust cloud infrastructure.
+            </div>
+          </details>
+
+          <details>
+            <summary>How do I backup my data offline?</summary>
+            <div class="faq-content">
+              You can easily export your data by navigating to <strong>Profile > Session</strong> and clicking the "Download Backup (JSON)" button. This downloads your entire dashboard data to your device. You can restore it anytime using the "Restore Backup" button.
+            </div>
+          </details>
+
+          <details>
+            <summary>Can I use PrimeSYS on multiple devices?</summary>
+            <div class="faq-content">
+              Yes! Simply log in with the same Google Account on any device, and your data (Notes, Tasks, Expenses) will automatically synchronize across all of them in real-time.
+            </div>
+          </details>
+
+          <details>
+            <summary>Does it work offline?</summary>
+            <div class="faq-content">
+              PrimeSYS is built with a local-first architecture. While an internet connection is required for initial login and syncing, most features like Notepad, Tasks, and Calculator run directly in your browser's memory for lightning-fast speeds.
+            </div>
+          </details>
+
+          <details>
+            <summary>How can I change my profile name?</summary>
+            <div class="faq-content">
+              Since we use Google Authentication, your display name and avatar are directly fetched from your Google Profile. If you update your Google Profile, it will automatically reflect in PrimeSYS on your next login.
+            </div>
+          </details>
+
+        </div>
       </div>
     </div>
 

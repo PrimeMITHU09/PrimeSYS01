@@ -2350,21 +2350,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const openTermsBtn = document.getElementById("openTermsBtn");
   const openAboutLink = document.getElementById("openAboutLink");
   const openRefundBtn = document.getElementById("openRefundBtn");
+  const openFaqBtn = document.getElementById("openFaqBtn");
   
   const privacyModal = document.getElementById("privacyModal");
   const termsModal = document.getElementById("termsModal");
   const aboutModal = document.getElementById("aboutModal");
   const refundModal = document.getElementById("refundModal");
+  const faqModal = document.getElementById("faqModal");
   
   document.getElementById("closePrivacyModal")?.addEventListener("click", () => privacyModal.classList.add("hidden"));
   document.getElementById("closeTermsModal")?.addEventListener("click", () => termsModal.classList.add("hidden"));
   document.getElementById("closeAboutModalBtn")?.addEventListener("click", () => aboutModal.classList.add("hidden"));
   document.getElementById("closeRefundModal")?.addEventListener("click", () => refundModal.classList.add("hidden"));
+  document.getElementById("closeFaqModal")?.addEventListener("click", () => faqModal.classList.add("hidden"));
   
   openPrivacyBtn?.addEventListener("click", (e) => { e.preventDefault(); privacyModal.classList.remove("hidden"); });
   openTermsBtn?.addEventListener("click", (e) => { e.preventDefault(); termsModal.classList.remove("hidden"); });
   openAboutLink?.addEventListener("click", (e) => { e.preventDefault(); aboutModal.classList.remove("hidden"); });
   openRefundBtn?.addEventListener("click", (e) => { e.preventDefault(); refundModal.classList.remove("hidden"); });
+  openFaqBtn?.addEventListener("click", (e) => { e.preventDefault(); faqModal.classList.remove("hidden"); });
 
   // 2. Global Search
   const searchInput = document.getElementById("globalSearchInput");
