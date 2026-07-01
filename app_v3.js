@@ -201,7 +201,8 @@ document.addEventListener("DOMContentLoaded", () => {
                       document.body.appendChild(syncBanner);
                     }
                   }
-              }
+                } // End if (!doc.metadata.hasPendingWrites)
+              } // End if (doc.exists)
             }, (syncErr) => {
               console.error("Sync fetch error:", syncErr);
             });
