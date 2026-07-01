@@ -347,8 +347,15 @@
                 <!-- BACKUP SECTION -->
                 <div class="glass-card" style="margin-top: 30px; text-align: center; padding: 25px;">
                   <h3 style="color: #60a5fa; margin-top: 0; margin-bottom: 10px;">💾 Data Backup & Restore</h3>
-                  <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Download a complete offline backup of all your notes, expenses, tasks, and history.</p>
-                  <button class="submit-btn" id="exportFullBackupBtn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); width: auto; padding: 10px 20px; font-size: 0.9rem;">Download Full Backup (JSON)</button>
+                  <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Download a complete offline backup, or restore from a previously saved JSON file.</p>
+                  <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button class="submit-btn" id="exportFullBackupBtn" style="background: linear-gradient(135deg, #3b82f6, #2563eb); width: auto; padding: 10px 20px; font-size: 0.9rem;">⬇️ Download Backup (JSON)</button>
+                    
+                    <label class="submit-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); width: auto; padding: 10px 20px; font-size: 0.9rem; cursor: pointer;">
+                      ⬆️ Restore Backup
+                      <input type="file" id="importBackupFile" accept=".json" style="display:none;">
+                    </label>
+                  </div>
                 </div>
                 
                 <!-- Danger Zone -->
@@ -978,6 +985,7 @@
               <a href="#" id="openAboutLink">About PrimeSYS</a>
               <a href="#" id="openPrivacyBtn">Privacy Policy</a>
               <a href="#" id="openTermsBtn">Terms of Service</a>
+              <a href="#" id="openRefundBtn">Refund / Return Policy</a>
             </div>
             <div class="footer-copyright">
               &copy; 2026 PrimeSYS. All rights reserved. Built for USA Audiences.
@@ -1025,6 +1033,25 @@
           <p><strong>2. Intellectual Property</strong><br>You retain full ownership of any content you create, store, or upload to PrimeSYS. The PrimeSYS platform itself, including its design, architecture, and code, remains the intellectual property of its creators.</p>
           <p><strong>3. Service Availability</strong><br>While we strive for 99.9% uptime, PrimeSYS is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the service will be entirely uninterrupted, error-free, or completely secure from unforeseen cyber threats.</p>
           <p><strong>4. Limitation of Liability</strong><br>In no event shall PrimeSYS or its developers be liable for any indirect, incidental, or consequential damages resulting from data loss, server downtime, or unauthorized access.</p>
+          <br>
+          <p><em>Last updated: July 2026.</em></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- REFUND & RETURN POLICY MODAL -->
+    <div id="refundModal" class="modal hidden">
+      <div class="modal-content glass-card" style="max-width: 600px; padding: 30px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px; margin-bottom:20px;">
+          <h2 style="margin:0; font-size:1.5rem; color:#fff;">Refund & Return Policy</h2>
+          <span class="close" id="closeRefundModal" style="font-size:2rem; cursor:pointer;">&times;</span>
+        </div>
+        <div style="color:var(--text-secondary); line-height:1.6; max-height:400px; overflow-y:auto; font-size: 0.95rem;">
+          <p>Thank you for choosing PrimeSYS. This policy dictates our terms regarding subscriptions, digital goods, and account data.</p>
+          <br>
+          <p><strong>1. Digital Services</strong><br>As PrimeSYS is a digital-first Software as a Service (SaaS), our primary offerings do not involve physical goods. Therefore, standard physical return policies do not apply.</p>
+          <p><strong>2. Premium Subscriptions & Refunds</strong><br>If you upgrade to any paid tier (if available), you are entitled to a full refund within the first 14 days of your purchase, no questions asked. After 14 days, refunds will be evaluated on a case-by-case basis based on service disruptions or critical failures.</p>
+          <p><strong>3. Data Deletion</strong><br>If you decide to leave our platform, you can "return" your account by deleting your session data permanently. Since you own your data, it will be wiped from our servers immediately upon your request without any hassle.</p>
           <br>
           <p><em>Last updated: July 2026.</em></p>
         </div>

@@ -2176,6 +2176,33 @@ function initExportFunctions(userData) {
     showToast("💾 Full Backup Exported successfully!", "success");
   });
   
+  // Full Account Restore (JSON)
+  document.getElementById("importBackupFile")?.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (confirm("WARNING: This will overwrite your current dashboard data. Are you sure you want to restore?")) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const importedData = JSON.parse(evt.target.result);
+          if (importedData && typeof importedData === 'object') {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData));
+            showToast("⬆️ Backup Restored! Refreshing dashboard...", "success");
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            showToast("❌ Invalid backup file format.", "error");
+          }
+        } catch (err) {
+          showToast("❌ Error parsing backup file.", "error");
+        }
+      };
+      reader.readAsText(file);
+    }
+    // reset input
+    e.target.value = '';
+  });
+  
   // Expense Tracker CSV Export
   document.getElementById("exportExpCsvBtn")?.addEventListener("click", () => {
     const expenses = userData.expenses || [];
@@ -2322,18 +2349,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const openPrivacyBtn = document.getElementById("openPrivacyBtn");
   const openTermsBtn = document.getElementById("openTermsBtn");
   const openAboutLink = document.getElementById("openAboutLink");
+  const openRefundBtn = document.getElementById("openRefundBtn");
   
   const privacyModal = document.getElementById("privacyModal");
   const termsModal = document.getElementById("termsModal");
   const aboutModal = document.getElementById("aboutModal");
+  const refundModal = document.getElementById("refundModal");
   
   document.getElementById("closePrivacyModal")?.addEventListener("click", () => privacyModal.classList.add("hidden"));
   document.getElementById("closeTermsModal")?.addEventListener("click", () => termsModal.classList.add("hidden"));
   document.getElementById("closeAboutModalBtn")?.addEventListener("click", () => aboutModal.classList.add("hidden"));
+  document.getElementById("closeRefundModal")?.addEventListener("click", () => refundModal.classList.add("hidden"));
   
   openPrivacyBtn?.addEventListener("click", (e) => { e.preventDefault(); privacyModal.classList.remove("hidden"); });
   openTermsBtn?.addEventListener("click", (e) => { e.preventDefault(); termsModal.classList.remove("hidden"); });
   openAboutLink?.addEventListener("click", (e) => { e.preventDefault(); aboutModal.classList.remove("hidden"); });
+  openRefundBtn?.addEventListener("click", (e) => { e.preventDefault(); refundModal.classList.remove("hidden"); });
 
   // 2. Global Search
   const searchInput = document.getElementById("globalSearchInput");
@@ -2379,7 +2410,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Search Notes
       db.notes?.forEach(n => {
         if (n.title.toLowerCase().includes(q) || n.text.toLowerCase().includes(q)) {
-          addResult("?? Note", n.title, () => {
+          addResult("📝 Note", n.title, () => {
             document.querySelector('[data-tab="notepadTab"]')?.click();
           });
           resultsCount++;
@@ -2388,27 +2419,27 @@ document.addEventListener("DOMContentLoaded", () => {
       // Search Expenses
       db.expenses?.forEach(e => {
         if (e.title.toLowerCase().includes(q)) {
-          addResult("?? Expense", ${e.title} ({e.amount}), () => document.querySelector('[data-tab="financeTab"]')?.click());
+          addResult("💸 Expense", e.title + " ($" + e.amount + ")", () => document.querySelector('[data-tab="financeTab"]')?.click());
           resultsCount++;
         }
       });
       // Search Tasks
       db.tasks?.forEach(t => {
         if (t.text.toLowerCase().includes(q)) {
-          addResult("? Task", t.text, () => document.querySelector('[data-tab="organizerTab"]')?.click());
+          addResult("✅ Task", t.text, () => document.querySelector('[data-tab="organizerTab"]')?.click());
           resultsCount++;
         }
       });
       // Search Music
       db.playlist?.forEach(m => {
         if (m.title.toLowerCase().includes(q)) {
-          addResult("?? Music", m.title, () => document.querySelector('[data-tab="mediaTab"]')?.click());
+          addResult("🎵 Music", m.title, () => document.querySelector('[data-tab="mediaTab"]')?.click());
           resultsCount++;
         }
       });
       
       if (resultsCount === 0) {
-        searchResultsDropdown.innerHTML = <div style="padding:10px; color:gray; text-align:center;">No results found for " + q + "</div>;
+        searchResultsDropdown.innerHTML = "<div style='padding:10px; color:gray; text-align:center;'>No results found for \"" + q + "\"</div>";
       }
       
       function addResult(type, title, onClick) {
@@ -2417,7 +2448,7 @@ document.addEventListener("DOMContentLoaded", () => {
         div.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
         div.style.cursor = "pointer";
         div.style.borderRadius = "5px";
-        div.innerHTML = <span style="font-size:0.8rem; color:#60a5fa; margin-right:10px;"> + type + </span>  + title;
+        div.innerHTML = "<span style='font-size:0.8rem; color:#60a5fa; margin-right:10px;'>" + type + "</span> " + title;
         div.addEventListener("click", () => {
           onClick();
           searchResultsDropdown.style.display = "none";
