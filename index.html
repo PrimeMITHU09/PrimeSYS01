@@ -104,9 +104,6 @@
             <button class="nav-item" data-tab="mediaTab">
               <span class="nav-icon">🍿</span> Media & Downloads
             </button>
-            <button class="nav-item" data-tab="liveTvTab" style="background: linear-gradient(90deg, rgba(239, 68, 68, 0.1), transparent); border-left: 3px solid transparent;">
-              <span class="nav-icon" style="color: #ef4444;">📺</span> Pr!meTV
-            </button>
             <button class="nav-item" data-tab="profileTab">
               <span class="nav-icon">⚙️</span> Settings
             </button>
@@ -741,45 +738,6 @@
 
         </div> <!-- Closing trackerTab -->
 
-          <!-- NEW TAB: PRIME TV -->
-          <div class="tab-content hidden" id="liveTvTab">
-            <header class="tab-header">
-              <div class="header-title"><h2 style="background: linear-gradient(to right, #ef4444, #f87171); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pr!meTV</h2></div>
-              <div class="header-desc"><p>Premium Live TV Streaming directly inside your workspace.</p></div>
-            </header>
-            
-            <div class="tv-layout" style="display:flex; gap:20px; height:calc(100vh - 200px); overflow:hidden;">
-              <!-- Inner Sidebar for Categories -->
-              <div class="tv-sidebar glass-card" style="width: 200px; flex-shrink: 0; padding: 20px; overflow-y: auto; border-radius: 16px;">
-                 <h4 style="margin-top:0; color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:15px;">Categories</h4>
-                 <div id="tvCategoryList" style="display:flex; flex-direction:column; gap:8px;">
-                    <!-- Categories will be injected here -->
-                 </div>
-              </div>
-
-              <!-- Main TV Area -->
-              <div class="tv-main-area" style="flex:1; display:flex; flex-direction:column; overflow:hidden; gap:20px;">
-                 <!-- Video Player -->
-                 <div class="iframe-container" style="position: relative; width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.6); aspect-ratio: 16/9; background: #000; border: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; max-height: 60vh;">
-                    <div id="tvPlaceholder" style="position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); z-index: 2;">
-                      <span style="font-size: 4rem; margin-bottom: 15px; opacity: 0.9;">🍿</span>
-                      <h4 style="color: #fff; font-size: 1.5rem; font-weight: 500; opacity: 0.9; text-align: center; padding: 0 20px;">Select a channel to start watching</h4>
-                    </div>
-                    <video id="tvPlayerVideo" style="width:100%; height:100%; position:absolute; top:0; left:0; z-index: 1; object-fit: contain;" controls autoplay muted playsinline></video>
-                 </div>
-
-                 <!-- Channel Grid -->
-                 <div class="tv-channel-grid glass-card" style="flex:1; padding:20px; overflow-y:auto; border-radius:16px;">
-                    <h4 id="tvCurrentCategoryTitle" style="margin-top:0; margin-bottom:15px; color:var(--text-primary);">All Channels</h4>
-                    <div id="tvChannelContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:15px;">
-                       <!-- Channels will be injected here -->
-                    </div>
-                 </div>
-              </div>
-            </div>
-          </div>
-
-
           <!-- NEW TAB 5: MEDIA & DOWNLOADS -->
           <div class="tab-content hidden" id="mediaTab">
             <header class="tab-header">
@@ -934,7 +892,6 @@
     </div>
   </div>
 
-  <script src="channels.js"></script>
   <script src="app_v3.js?v=4"></script>
   <!-- PWA Service Worker Registration -->
   <script>

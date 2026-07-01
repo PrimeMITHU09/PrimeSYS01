@@ -31,6 +31,20 @@ app.get('/download', async (req, res) => {
   }
 });
 
+const http = require('http');
+
+app.get('/api/proxy/image', (req, res) => {
+  const imageUrl = req.query.url;
+  if (!imageUrl) return res.status(400).send('No URL provided');
+  
+  http.get(imageUrl, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers);
+    proxyRes.pipe(res);
+  }).on('error', (err) => {
+    res.status(500).send(err.message);
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`PrimeSYS Downloader Backend running on port ${PORT}`);

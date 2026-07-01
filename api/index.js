@@ -47,39 +47,7 @@ app.get('/api/download', async (req, res) => {
     res.status(500).send('Failed to process download: ' + error.message);
   }
 });
-app.get('/api/proxy/stream', (req, res) => {
-  const streamId = req.query.id;
-  if (!streamId) return res.status(400).json({ error: 'No stream ID provided' });
-  
-  const http = require('http');
-  const options = {
-    hostname: 'redforce.live',
-    path: `/player.php?stream=${streamId}`,
-    method: 'GET',
-    headers: {
-      'Referer': 'http://redforce.live/',
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-  };
 
-  const proxyReq = http.request(options, (proxyRes) => {
-    let data = '';
-    proxyRes.on('data', (chunk) => { data += chunk; });
-    proxyRes.on('end', () => {
-      const match = data.match(/var primarySource = '(.*?)';/);
-      if (match && match[1]) {
-        res.json({ streamUrl: match[1] });
-      } else {
-        res.status(404).json({ error: 'Stream URL not found' });
-      }
-    });
-  });
-
-  proxyReq.on('error', (err) => {
-    res.status(500).json({ error: err.message });
-  });
-  proxyReq.end();
-});
 
 app.get('/api/proxy/image', (req, res) => {
   const imageUrl = req.query.url;
