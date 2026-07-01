@@ -318,6 +318,25 @@ async function initDashboardFeatures(userData) {
     });
   });
 
+  // NEW: Root Sub-tab switching for Categories
+  const rootSubTabBtns = document.querySelectorAll(".root-sub-tab-btn");
+  rootSubTabBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const container = btn.parentElement;
+      container.querySelectorAll(".root-sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      
+      const parentContent = container.closest(".tab-content");
+      if (parentContent) {
+        parentContent.querySelectorAll(".root-sub-tab-pane").forEach(pane => pane.classList.add("hidden"));
+      }
+      
+      const targetTabId = btn.getAttribute("data-subtab");
+      const targetPane = document.getElementById(targetTabId);
+      if (targetPane) targetPane.classList.remove("hidden");
+    });
+  });
+
   // 1. PrimeON NOTEPAD MODULE
   initNotepadModule(userData);
 
@@ -1226,12 +1245,23 @@ function updateSyncStatus(element, text, statusType) {
 function initWeatherModule(locData) {
   const clockEl = document.getElementById("clockDisplay");
   const dateEl = document.getElementById("dateDisplay");
+  const clockFormatToggle = document.getElementById("clockFormatToggle");
   
   if(!clockEl) return;
   
+  // Load saved preference
+  if (clockFormatToggle) {
+    const savedFormat = localStorage.getItem("use24HourFormat");
+    clockFormatToggle.checked = savedFormat === "true";
+    clockFormatToggle.addEventListener("change", (e) => {
+      localStorage.setItem("use24HourFormat", e.target.checked);
+    });
+  }
+  
   setInterval(() => {
     const now = new Date();
-    clockEl.textContent = now.toLocaleTimeString('en-US', { hour12: false });
+    const use24h = clockFormatToggle ? clockFormatToggle.checked : false;
+    clockEl.textContent = now.toLocaleTimeString('en-US', { hour12: !use24h });
     dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   }, 1000);
 
@@ -1610,13 +1640,6 @@ function initMusicModule() {
     }
   }
 
-  if (pipBtn) {
-    pipBtn.addEventListener("click", () => {
-      if (typeof showToast === 'function') {
-        showToast("Right-click twice on the video and select 'Picture in picture' to float it!", "info");
-      }
-    });
-  }
 
   if (downloadCurrentYtBtn) {
     downloadCurrentYtBtn.addEventListener("click", () => {
