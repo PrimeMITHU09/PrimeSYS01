@@ -1047,8 +1047,34 @@ function initProfileSettings(userData) {
   const details = userData.profileDetails || {};
   cellInput.value = details.cellNumber || "";
   nameInput.value = details.fullName || userData.displayName || "";
-  picInput.value = details.profilePic || "";
-  coverInput.value = details.coverPic || "";
+  
+  let tempProfilePic = details.profilePic || "";
+  let tempCoverPic = details.coverPic || "";
+
+  // FileReader helpers
+  picInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        tempProfilePic = evt.target.result;
+        refreshPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  coverInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        tempCoverPic = evt.target.result;
+        refreshPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
   const social = details.socialLinks || {};
   fbInput.value = social.fb || "";
@@ -1062,26 +1088,11 @@ function initProfileSettings(userData) {
     emailDisplay.textContent = userData.email || "user@primesys.live";
     phoneDisplay.textContent = cellInput.value ? `📞 ${cellInput.value}` : "";
 
-    const lockedProfilePic = "icon.svg";
-    picInput.value = lockedProfilePic;
-    avatarPreview.src = lockedProfilePic;
+    const activeProfilePic = tempProfilePic || userData.photoURL || "icon.svg";
+    avatarPreview.src = activeProfilePic;
 
-    if (coverInput.value) {
-      let finalCoverUrl = coverInput.value;
-      
-      // Auto-convert Google Drive links to direct image links
-      const gDriveMatch = finalCoverUrl.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
-      if (gDriveMatch && gDriveMatch[1]) {
-        finalCoverUrl = `https://drive.google.com/uc?export=view&id=${gDriveMatch[1]}`;
-      }
-      
-      // Auto-convert Imgur page links (e.g. imgur.com/XYZ or imgur.com/a/XYZ) to direct image links
-      const imgurMatch = finalCoverUrl.match(/^https?:\/\/(?:www\.)?imgur\.com\/(?:a\/|gallery\/)?([a-zA-Z0-9]+)/);
-      if (imgurMatch && imgurMatch[1]) {
-        finalCoverUrl = `https://i.imgur.com/${imgurMatch[1]}.jpg`;
-      }
-      
-      coverPreview.style.backgroundImage = `url('${finalCoverUrl}')`;
+    if (tempCoverPic) {
+      coverPreview.style.backgroundImage = `url('${tempCoverPic}')`;
     } else {
       coverPreview.style.backgroundImage = "none";
     }
@@ -1109,7 +1120,7 @@ function initProfileSettings(userData) {
 
     const commentAvatarEl = document.getElementById("commentAvatarImg");
     if (commentAvatarEl) {
-      commentAvatarEl.src = lockedProfilePic;
+      commentAvatarEl.src = activeProfilePic;
     }
 
     const commentTextEl = document.getElementById("commentAttentionText");
@@ -1130,8 +1141,6 @@ function initProfileSettings(userData) {
 
   nameInput.addEventListener("input", refreshPreview);
   cellInput.addEventListener("input", refreshPreview);
-  picInput.addEventListener("input", refreshPreview);
-  coverInput.addEventListener("input", refreshPreview);
   fbInput.addEventListener("input", refreshPreview);
   instaInput.addEventListener("input", refreshPreview);
   linkedinInput.addEventListener("input", refreshPreview);
@@ -1152,7 +1161,8 @@ function initProfileSettings(userData) {
         profileForm.classList.remove("readonly-mode");
         const inputs = profileForm.querySelectorAll("input");
         inputs.forEach(inp => {
-          if (inp.id !== "profilePicInput") inp.removeAttribute("readonly");
+          if (inp.type !== "file") inp.removeAttribute("readonly");
+          if (inp.type === "file") inp.disabled = false;
         });
         saveBtn.classList.remove("hidden");
         toggleEditBtn.innerHTML = "❌ Cancel Edit";
@@ -1163,16 +1173,19 @@ function initProfileSettings(userData) {
         profileForm.classList.add("readonly-mode");
         const inputs = profileForm.querySelectorAll("input");
         inputs.forEach(inp => {
-          inp.setAttribute("readonly", "true");
+          if (inp.type !== "file") inp.setAttribute("readonly", "true");
+          if (inp.type === "file") inp.disabled = true;
         });
         saveBtn.classList.add("hidden");
         toggleEditBtn.innerHTML = "✏️ Edit Profile";
         toggleEditBtn.style.background = "rgba(255,255,255,0.1)";
         toggleEditBtn.style.color = "#fff";
+        
         // Reset values to saved state
         cellInput.value = details.cellNumber || "";
         nameInput.value = details.fullName || userData.displayName || "";
-        coverInput.value = details.coverPic || "";
+        tempProfilePic = details.profilePic || "";
+        tempCoverPic = details.coverPic || "";
         fbInput.value = social.fb || "";
         instaInput.value = social.insta || "";
         linkedinInput.value = social.linkedin || "";
@@ -1194,8 +1207,8 @@ function initProfileSettings(userData) {
       profileDetails: {
         cellNumber: cellInput.value.trim(),
         fullName: nameInput.value.trim(),
-        profilePic: picInput.value.trim(),
-        coverPic: coverInput.value.trim(),
+        profilePic: tempProfilePic,
+        coverPic: tempCoverPic,
         socialLinks: {
           fb: fbInput.value.trim(),
           insta: instaInput.value.trim(),
@@ -1214,10 +1227,14 @@ function initProfileSettings(userData) {
       // Return to readonly mode
       profileForm.classList.add("readonly-mode");
       const inputs = profileForm.querySelectorAll("input");
-      inputs.forEach(inp => inp.setAttribute("readonly", "true"));
+      inputs.forEach(inp => {
+        if (inp.type !== "file") inp.setAttribute("readonly", "true");
+        if (inp.type === "file") inp.disabled = true;
+      });
       saveBtn.classList.add("hidden");
       toggleEditBtn.innerHTML = "✏️ Edit Profile";
       toggleEditBtn.style.background = "rgba(255,255,255,0.1)";
+      toggleEditBtn.style.color = "#fff";
       toggleEditBtn.style.color = "#fff";
       showToast("Profile Updated Successfully!", "success");
 

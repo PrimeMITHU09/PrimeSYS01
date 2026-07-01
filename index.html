@@ -165,9 +165,9 @@
         <section class="content-panel">
           <!-- Global Header -->
             <header class="global-header sticky-header" style="position: relative;">
-              <div class="search-container">
+              <div class="search-container" style="flex: 1; max-width: 500px; border-radius: 25px;">
                 <span style="font-size: 1.2rem; margin-right: 10px;">🔍</span>
-                <input type="text" id="globalSearchInput" placeholder="Search notes, tasks, expenses..." style="width: 350px; padding: 12px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: var(--text-primary); outline: none; font-size: 1rem; transition: all 0.3s ease;" onfocus="this.style.width='450px'; this.style.borderColor='var(--primary-accent)'; this.style.boxShadow='0 0 15px rgba(96, 165, 250, 0.3)';" onblur="this.style.width='350px'; this.style.borderColor='rgba(255,255,255,0.2)'; this.style.boxShadow='none';">
+                <input type="text" id="globalSearchInput" placeholder="Search notes, tasks, expenses..." style="width: 100%; border: none; background: transparent; color: var(--text-primary); outline: none; font-size: 1rem;">
               </div>
               <div class="header-user-actions" style="position: relative;">
                 <button class="icon-btn" id="headerNotificationsBtn" style="transition: 0.3s; font-size: 1.4rem;">🔔</button>
@@ -243,17 +243,20 @@
                       </div>
                     </div>
 
-                    <div class="form-group" style="opacity: 0.7;">
-                      <label for="profilePicInput">Profile Picture 🔒 (Locked to App Logo)</label>
+                    <div class="form-group">
+                      <label for="profilePicInput">Profile Picture (Upload from Gallery)</label>
                       <div class="input-wrapper">
                         <span class="input-icon">📷</span>
-                        <input type="url" id="profilePicInput" value="icon.svg" disabled style="cursor: not-allowed; border-color: rgba(255,255,255,0.05); background: rgba(0,0,0,0.5);">
+                        <input type="file" id="profilePicInput" accept="image/*" style="padding-top: 10px;">
                       </div>
                     </div>
 
                     <div class="form-group">
-                      <label for="coverPicInput">Cover Picture URL <span style="opacity:0.45;font-weight:400;font-size:0.75rem;">(optional)</span></label>
-                      <input type="url" id="coverPicInput" placeholder="https://example.com/cover.jpg" readonly>
+                      <label for="coverPicInput">Cover Picture (Upload from Gallery) <span style="opacity:0.45;font-weight:400;font-size:0.75rem;">(optional)</span></label>
+                      <div class="input-wrapper">
+                        <span class="input-icon">🖼️</span>
+                        <input type="file" id="coverPicInput" accept="image/*" style="padding-top: 10px;">
+                      </div>
                     </div>
 
                     <div class="divider-text">Social Media Connections</div>
