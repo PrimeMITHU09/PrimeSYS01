@@ -144,25 +144,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
           let dbData = getLocalData();
-          
-          if (typeof firestoreDb !== 'undefined') {
-            try {
-              const docRef = await firestoreDb.collection("users").doc(user.uid).get();
-              if (docRef.exists) {
-                const cloudData = docRef.data();
-                dbData = cloudData;
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
-                showToast("☁️ Data synced from Cloud", "info");
-              }
-            } catch(syncErr) {
-              console.error("Sync fetch error:", syncErr);
-            }
-          }
-          
           dbData.displayName = name || "User";
           dbData.email = user.email || "";
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
+          
+          if (typeof firestoreDb !== 'undefined') {
+            let isInitialLoad = true;
+            // Listen for real-time changes
+            firestoreDb.collection("users").doc(user.uid).onSnapshot({ includeMetadataChanges: true }, (doc) => {
+              if (doc.exists) {
+                const cloudData = doc.data();
+                
+                // hasPendingWrites is false when the update comes from the SERVER (another device)
+                if (!doc.metadata.hasPendingWrites) {
+                  dbData = cloudData;
+                  dbData.displayName = name || "User";
+                  dbData.email = user.email || "";
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
+                  
+                  if (isInitialLoad) {
+                    showToast("🔄 Data loaded from Cloud", "info");
+                    isInitialLoad = false;
+                  } else {
+                    // This is a remote update from another device!
+                    showToast("📱 Data synced from another device in background!", "success");
+                    
+                    // Show a sticky refresh banner
+                    let syncBanner = document.getElementById("syncUpdateBanner");
+                    if (!syncBanner) {
+                      syncBanner = document.createElement("div");
+                      syncBanner.id = "syncUpdateBanner";
+                      syncBanner.style.position = "fixed";
+                      syncBanner.style.bottom = "20px";
+                      syncBanner.style.left = "50%";
+                      syncBanner.style.transform = "translateX(-50%)";
+                      syncBanner.style.background = "linear-gradient(135deg, #10b981, #059669)";
+                      syncBanner.style.color = "#fff";
+                      syncBanner.style.padding = "12px 24px";
+                      syncBanner.style.borderRadius = "30px";
+                      syncBanner.style.boxShadow = "0 10px 25px rgba(16, 185, 129, 0.4)";
+                      syncBanner.style.zIndex = "9999";
+                      syncBanner.style.display = "flex";
+                      syncBanner.style.alignItems = "center";
+                      syncBanner.style.gap = "15px";
+                      syncBanner.style.cursor = "pointer";
+                      syncBanner.style.fontWeight = "500";
+                      
+                      syncBanner.innerHTML = `
+                        <span>🔄 New data synced from your other device!</span>
+                        <button style="background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold;">Refresh Now</button>
+                      `;
+                      
+                      syncBanner.addEventListener("click", () => {
+                        window.location.reload();
+                      });
+                      
+                      document.body.appendChild(syncBanner);
+                    }
+                  }
+              }
+            }, (syncErr) => {
+              console.error("Sync fetch error:", syncErr);
+            });
+          }
 
+          // Initial render with local data (will update instantly when snapshot fires)
           if (dashboardMainContainer) dashboardMainContainer.classList.remove("hidden");
           initDashboardFeatures(dbData);
         } catch(e) {
