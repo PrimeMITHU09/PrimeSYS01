@@ -2359,3 +2359,125 @@ input:checked + .slider:before { transform: translateX(20px); }
 .sound-btn.active { opacity: 1; background: var(--primary-accent); color:#fff; border-color:var(--primary-accent); box-shadow: 0 0 15px var(--accent-glow); }
 .eq-slider { accent-color: var(--primary-accent); cursor: pointer; }
 
+
+/* --- GLOBAL STICKY HEADER --- */
+.global-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  background: rgba(10, 15, 30, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin: -32px -32px 20px -32px; 
+  border-radius: 20px 20px 0 0;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 15px;
+  border-radius: 30px;
+  width: 100%;
+  max-width: 400px;
+  transition: all 0.3s ease;
+}
+.search-container:focus-within {
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
+}
+.search-container input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+}
+.search-container input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.header-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* --- GLOBAL FOOTER --- */
+.global-footer {
+  margin-top: 50px;
+  padding: 30px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-links a:hover {
+  color: #fff;
+}
+.footer-copyright {
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .global-header {
+    margin: -20px -20px 20px -20px;
+    border-radius: 0;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .search-container {
+    max-width: 100%;
+  }
+}
+
+/* --- WhatsApp Floating Chat --- */
+.whatsapp-float {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 40px;
+  right: 40px;
+  background-color: #25d366;
+  color: #FFF;
+  border-radius: 50px;
+  text-align: center;
+  font-size: 30px;
+  box-shadow: 2px 2px 3px #000;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  animation: bounceIn 0.8s ease;
+}
+.whatsapp-float:hover {
+  background-color: #128C7E;
+  transform: scale(1.1);
+}
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}

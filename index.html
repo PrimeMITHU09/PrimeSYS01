@@ -43,6 +43,15 @@
   <!-- jsPDF for Exporting -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DRTXLB9F9N"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-DRTXLB9F9N');
+  </script>
+
   <script>
     // Global Error Handler for Mobile/Desktop to catch silent errors
     window.onerror = function(msg, url, line, col, error) {
@@ -988,12 +997,16 @@
           <h2 style="margin:0; font-size:1.5rem; color:#fff;">Privacy Policy</h2>
           <span class="close" id="closePrivacyModal" style="font-size:2rem; cursor:pointer;">&times;</span>
         </div>
-        <div style="color:var(--text-secondary); line-height:1.6; max-height:400px; overflow-y:auto;">
-          <p>At PrimeSYS, your privacy is our priority. We collect minimal data necessary to provide you with an optimal experience.</p>
-          <p><strong>1. Data Collection:</strong> We do not track your browsing history or sell your personal data. Data saved in your dashboard is securely stored in your browser's local storage or synced securely via Google Firebase.</p>
-          <p><strong>2. Third-Party Services:</strong> We use Firebase for authentication and database syncing. We do not share your data with advertisers.</p>
-          <p><strong>3. Your Rights:</strong> You have the right to request deletion of your account and all associated data at any time via the Settings menu.</p>
-          <p><em>Last updated: Today.</em></p>
+        <div style="color:var(--text-secondary); line-height:1.6; max-height:400px; overflow-y:auto; font-size: 0.95rem;">
+          <p>Welcome to <strong>PrimeSYS</strong>. Your privacy is of paramount importance to us. This Privacy Policy outlines how we collect, use, and protect your information when you use our dashboard.</p>
+          <br>
+          <p><strong>1. Information Collection</strong><br>We do not collect unnecessary data. We only collect the basic Google account information (Name, Email, Profile Picture) strictly required for Authentication via Firebase. All personal notes, expenses, and tasks you create are securely synchronized directly to our cloud database.</p>
+          <p><strong>2. Data Usage</strong><br>Your data is used solely to provide you with the dashboard experience. We do NOT analyze your personal data, nor do we sell, rent, or trade your data to third-party advertisers.</p>
+          <p><strong>3. Security</strong><br>PrimeSYS uses Google's robust infrastructure (Firebase/Firestore) for end-to-end secure transmission of your data. We implement strict security protocols to prevent unauthorized access.</p>
+          <p><strong>4. Local-First Approach</strong><br>Most of your data is processed locally on your device for lightning-fast speeds. The cloud is only used as a backup and synchronization layer.</p>
+          <p><strong>5. Your Rights</strong><br>You have full ownership of your data. You can delete your session or request complete data removal from our servers at any time through your Profile Settings.</p>
+          <br>
+          <p><em>Last updated: July 2026.</em></p>
         </div>
       </div>
     </div>
@@ -1005,12 +1018,15 @@
           <h2 style="margin:0; font-size:1.5rem; color:#fff;">Terms of Service</h2>
           <span class="close" id="closeTermsModal" style="font-size:2rem; cursor:pointer;">&times;</span>
         </div>
-        <div style="color:var(--text-secondary); line-height:1.6; max-height:400px; overflow-y:auto;">
-          <p>By using PrimeSYS, you agree to the following terms:</p>
-          <p><strong>1. Acceptable Use:</strong> You agree not to misuse our services or help anyone else do so. Do not try to access the system using a method other than the interface and instructions we provide.</p>
-          <p><strong>2. User Content:</strong> You retain ownership of any intellectual property rights that you hold in the content you submit to PrimeSYS.</p>
-          <p><strong>3. Warranties & Disclaimers:</strong> We provide our services using a commercially reasonable level of skill and care. However, we do not make specific promises about the services, such as their reliability or availability.</p>
-          <p><em>Last updated: Today.</em></p>
+        <div style="color:var(--text-secondary); line-height:1.6; max-height:400px; overflow-y:auto; font-size: 0.95rem;">
+          <p>By accessing or using <strong>PrimeSYS</strong>, you agree to be bound by these Terms of Service. If you disagree with any part of the terms, you may not access the service.</p>
+          <br>
+          <p><strong>1. Acceptable Use</strong><br>You agree to use PrimeSYS only for lawful purposes. You must not use our service to store illegal, harmful, or explicitly offensive content. Any malicious activities, including attempting to breach our security or APIs, will result in immediate termination of your account.</p>
+          <p><strong>2. Intellectual Property</strong><br>You retain full ownership of any content you create, store, or upload to PrimeSYS. The PrimeSYS platform itself, including its design, architecture, and code, remains the intellectual property of its creators.</p>
+          <p><strong>3. Service Availability</strong><br>While we strive for 99.9% uptime, PrimeSYS is provided on an "AS IS" and "AS AVAILABLE" basis. We do not warrant that the service will be entirely uninterrupted, error-free, or completely secure from unforeseen cyber threats.</p>
+          <p><strong>4. Limitation of Liability</strong><br>In no event shall PrimeSYS or its developers be liable for any indirect, incidental, or consequential damages resulting from data loss, server downtime, or unauthorized access.</p>
+          <br>
+          <p><em>Last updated: July 2026.</em></p>
         </div>
       </div>
     </div>
@@ -1081,5 +1097,10 @@
       });
     }
   </script>
+  
+  <!-- WhatsApp Floating Chat -->
+  <a href="https://wa.me/8801864339154?text=Hi%20PrimeSYS%20Support," target="_blank" class="whatsapp-float" id="whatsappChat" title="Live Chat Support">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Chat" width="35" height="35">
+  </a>
 </body>
 </html>

@@ -329,6 +329,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- DASHBOARD CONTROLLER ---
 async function initDashboardFeatures(userData) {
+  // Update header user chip
+  const headerUserChip = document.getElementById("headerUserChip");
+  if (headerUserChip) {
+    headerUserChip.textContent = userData.displayName || "User";
+  }
+
   // Make Logo Clickable to Refresh Page
   const dashboardLogo = document.getElementById("dashboardLogo");
   if (dashboardLogo) {
@@ -2309,3 +2315,183 @@ function initExportFunctions(userData) {
 
 
 
+
+// --- GLOBAL SEARCH & MODALS (SEO/UX UPDATE) ---
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Modals
+  const openPrivacyBtn = document.getElementById("openPrivacyBtn");
+  const openTermsBtn = document.getElementById("openTermsBtn");
+  const openAboutLink = document.getElementById("openAboutLink");
+  
+  const privacyModal = document.getElementById("privacyModal");
+  const termsModal = document.getElementById("termsModal");
+  const aboutModal = document.getElementById("aboutModal");
+  
+  document.getElementById("closePrivacyModal")?.addEventListener("click", () => privacyModal.classList.add("hidden"));
+  document.getElementById("closeTermsModal")?.addEventListener("click", () => termsModal.classList.add("hidden"));
+  document.getElementById("closeAboutModalBtn")?.addEventListener("click", () => aboutModal.classList.add("hidden"));
+  
+  openPrivacyBtn?.addEventListener("click", (e) => { e.preventDefault(); privacyModal.classList.remove("hidden"); });
+  openTermsBtn?.addEventListener("click", (e) => { e.preventDefault(); termsModal.classList.remove("hidden"); });
+  openAboutLink?.addEventListener("click", (e) => { e.preventDefault(); aboutModal.classList.remove("hidden"); });
+
+  // 2. Global Search
+  const searchInput = document.getElementById("globalSearchInput");
+  let searchResultsDropdown = null;
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const db = getLocalData();
+      
+      if (!searchResultsDropdown) {
+        searchResultsDropdown = document.createElement("div");
+        searchResultsDropdown.className = "glass-card";
+        searchResultsDropdown.style.position = "absolute";
+        searchResultsDropdown.style.top = "60px";
+        searchResultsDropdown.style.left = "25px";
+        searchResultsDropdown.style.width = "400px";
+        searchResultsDropdown.style.maxHeight = "400px";
+        searchResultsDropdown.style.overflowY = "auto";
+        searchResultsDropdown.style.zIndex = "1000";
+        searchResultsDropdown.style.padding = "10px";
+        searchResultsDropdown.style.display = "none";
+        document.querySelector(".global-header").appendChild(searchResultsDropdown);
+        
+        // Hide when clicking outside
+        document.addEventListener("click", (evt) => {
+          if (!searchInput.contains(evt.target) && !searchResultsDropdown.contains(evt.target)) {
+            searchResultsDropdown.style.display = "none";
+          }
+        });
+      }
+      
+      if (!q) {
+        searchResultsDropdown.style.display = "none";
+        return;
+      }
+      
+      searchResultsDropdown.style.display = "block";
+      searchResultsDropdown.innerHTML = "";
+      
+      let resultsCount = 0;
+      
+      // Search Notes
+      db.notes?.forEach(n => {
+        if (n.title.toLowerCase().includes(q) || n.text.toLowerCase().includes(q)) {
+          addResult("?? Note", n.title, () => {
+            document.querySelector('[data-tab="notepadTab"]')?.click();
+          });
+          resultsCount++;
+        }
+      });
+      // Search Expenses
+      db.expenses?.forEach(e => {
+        if (e.title.toLowerCase().includes(q)) {
+          addResult("?? Expense", ${e.title} ({e.amount}), () => document.querySelector('[data-tab="financeTab"]')?.click());
+          resultsCount++;
+        }
+      });
+      // Search Tasks
+      db.tasks?.forEach(t => {
+        if (t.text.toLowerCase().includes(q)) {
+          addResult("? Task", t.text, () => document.querySelector('[data-tab="organizerTab"]')?.click());
+          resultsCount++;
+        }
+      });
+      // Search Music
+      db.playlist?.forEach(m => {
+        if (m.title.toLowerCase().includes(q)) {
+          addResult("?? Music", m.title, () => document.querySelector('[data-tab="mediaTab"]')?.click());
+          resultsCount++;
+        }
+      });
+      
+      if (resultsCount === 0) {
+        searchResultsDropdown.innerHTML = <div style="padding:10px; color:gray; text-align:center;">No results found for " + q + "</div>;
+      }
+      
+      function addResult(type, title, onClick) {
+        const div = document.createElement("div");
+        div.style.padding = "10px";
+        div.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
+        div.style.cursor = "pointer";
+        div.style.borderRadius = "5px";
+        div.innerHTML = <span style="font-size:0.8rem; color:#60a5fa; margin-right:10px;"> + type + </span>  + title;
+        div.addEventListener("click", () => {
+          onClick();
+          searchResultsDropdown.style.display = "none";
+          searchInput.value = "";
+        });
+        div.onmouseover = () => div.style.background = "rgba(255,255,255,0.1)";
+        div.onmouseout = () => div.style.background = "transparent";
+        searchResultsDropdown.appendChild(div);
+      }
+    });
+  }
+});
+
+// --- ADMIN NOTIFICATIONS ---
+document.addEventListener("DOMContentLoaded", () => {
+  const notifBtn = document.getElementById("headerNotificationsBtn");
+  
+  async function checkAdminNotifications() {
+    if (!notifBtn) return;
+    try {
+      const res = await fetch('notifications.json?t=' + new Date().getTime());
+      if (!res.ok) return;
+      const notif = await res.json();
+      
+      const lastId = localStorage.getItem("lastNotificationId");
+      
+      if (!lastId || notif.id > parseInt(lastId)) {
+        // We have a new notification!
+        
+        // Add red dot
+        notifBtn.innerHTML = '??<span style=\"position:absolute; top:-2px; right:-2px; width:10px; height:10px; background:red; border-radius:50%; box-shadow:0 0 5px red;\"></span>';
+        notifBtn.style.position = "relative";
+        
+        // Play Sound (Simple Web Audio Beep)
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          const audioCtx = new AudioContext();
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          
+          oscillator.type = 'sine';
+          oscillator.frequency.value = 880; // A5 note
+          gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Low volume
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          
+          oscillator.start();
+          setTimeout(() => oscillator.stop(), 300); // 300ms beep
+        } catch(e) { console.log("Audio play failed", e); }
+        
+        if (typeof showToast === 'function') {
+          showToast("?? New Alert: " + notif.title, "info");
+        }
+        
+        // Handle Click
+        notifBtn.onclick = () => {
+          notifBtn.innerHTML = '??'; // Remove dot
+          localStorage.setItem("lastNotificationId", notif.id);
+          
+          alert("Admin Notification:\\n\\n" + notif.title + "\\n" + notif.message);
+        };
+      } else {
+        // Already read
+        notifBtn.innerHTML = '??';
+        notifBtn.onclick = () => {
+           alert("Latest Notification:\\n\\n" + notif.title + "\\n" + notif.message);
+        };
+      }
+    } catch(e) {
+      console.log("Notifications fetch failed or disabled.");
+    }
+  }
+  
+  // Check for notifications 2 seconds after load
+  setTimeout(checkAdminNotifications, 2000);
+});
