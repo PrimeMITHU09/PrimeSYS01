@@ -99,7 +99,7 @@ app.get('/tv_player', (req, res) => {
             </style>
           </head>
           <body>
-            <video id="video" controls autoplay></video>
+            <video id="video" controls autoplay muted playsinline></video>
             <script>
               const video = document.getElementById('video');
               const url = "${streamUrl}";
