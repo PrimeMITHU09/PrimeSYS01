@@ -2149,11 +2149,12 @@ function initExportFunctions(userData) {
         return;
       }
       
-      // Open in a reliable 3rd party downloader, e.g. savefrom.net
-      const downloadUrl = `https://en.savefrom.net/1-youtube-video-downloader-360/?url=${encodeURIComponent(url)}`;
+      // Open in Cobalt Tools (100% Ad-Free, Open Source downloader)
+      // We pass the URL directly to their web app so the user doesn't see ads.
+      const downloadUrl = `https://cobalt.tools/?url=${encodeURIComponent(url)}`;
       window.open(downloadUrl, "_blank");
       
-      showToast("Opening downloader...", "success");
+      showToast("Opening Ad-Free Downloader...", "success");
       downloadLinkInput.value = "";
     });
   }
