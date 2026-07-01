@@ -1564,14 +1564,13 @@ function initMusicModule() {
       // Otherwise do a search
       searchYtBtn.innerHTML = "⏳ Searching...";
       try {
-        const res = await fetch(`https://vid.puffyan.us/api/v1/search?q=${encodeURIComponent(query)}`);
-        const data = await res.json();
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const videos = await res.json();
         
         if (ytSearchResults) {
           ytSearchResults.innerHTML = "";
           ytSearchResults.style.display = "flex";
           
-          const videos = data.filter(d => d.type === "video").slice(0, 6);
           if (videos.length === 0) {
             ytSearchResults.innerHTML = "<p style='text-align:center;color:#fff;'>No results found.</p>";
           } else {
@@ -1581,10 +1580,10 @@ function initMusicModule() {
               item.onmouseenter = () => item.style.background = "rgba(255,255,255,0.1)";
               item.onmouseleave = () => item.style.background = "rgba(255,255,255,0.05)";
               item.innerHTML = `
-                <img src="https://i.ytimg.com/vi/${v.videoId}/mqdefault.jpg" style="width:120px; border-radius:8px; aspect-ratio:16/9; object-fit:cover;">
+                <img src="${v.image || v.thumbnail}" style="width:120px; border-radius:8px; aspect-ratio:16/9; object-fit:cover;">
                 <div style="flex:1;">
                   <h4 style="font-size:1rem; margin-bottom:5px; color:#fff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${v.title}</h4>
-                  <span style="font-size:0.8rem; color:var(--text-secondary);">${v.author} • ${v.publishedText || ''}</span>
+                  <span style="font-size:0.8rem; color:var(--text-secondary);">${v.author?.name || v.author} • ${v.ago || ''}</span>
                 </div>
               `;
               item.onclick = () => {

@@ -1,12 +1,25 @@
 const express = require('express');
 const cors = require('cors');
 const ytdl = require('@distube/ytdl-core');
+const ytSearch = require('yt-search');
 
 const app = express();
 app.use(cors());
 
 app.get('/api', (req, res) => {
   res.send('PrimeSYS API is running on Vercel!');
+});
+
+app.get('/api/search', async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.status(400).send('Missing query');
+  try {
+    const r = await ytSearch(q);
+    const videos = r.videos.slice(0, 8);
+    res.json(videos);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 app.get('/api/download', async (req, res) => {
