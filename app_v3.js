@@ -2189,20 +2189,24 @@ function initExportFunctions(userData) {
     
     dlMp4Btn?.addEventListener("click", () => {
       if(!currentDlUrl) return;
-      // Open Cobalt ad-free downloader with Video preset in a small popup window to feel native
-      const downloadUrl = `https://cobalt.tools/?url=${encodeURIComponent(currentDlUrl)}`;
-      window.open(downloadUrl, "DownloadWindow", "width=450,height=600,top=100,left=100");
-      showToast("Download engine initialized...", "success");
+      // Native auto-download using our Custom Node.js Backend
+      const backendUrl = "https://primesys-backend.onrender.com"; // Replace with local testing http://localhost:3000 if needed
+      const downloadUrl = `${backendUrl}/download?url=${encodeURIComponent(currentDlUrl)}&format=mp4`;
+      
+      window.location.href = downloadUrl; // Triggers "Save As" directly!
+      showToast("Download started natively...", "success");
       dlModal.classList.add("hidden");
       downloadLinkInput.value = "";
     });
     
     dlMp3Btn?.addEventListener("click", () => {
       if(!currentDlUrl) return;
-      // Open Cobalt ad-free downloader with Audio preset
-      const downloadUrl = `https://cobalt.tools/?url=${encodeURIComponent(currentDlUrl)}`;
-      window.open(downloadUrl, "DownloadWindow", "width=450,height=600,top=100,left=100");
-      showToast("Audio extraction engine initialized...", "success");
+      // Native auto-download using our Custom Node.js Backend
+      const backendUrl = "https://primesys-backend.onrender.com"; // Replace with local testing http://localhost:3000 if needed
+      const downloadUrl = `${backendUrl}/download?url=${encodeURIComponent(currentDlUrl)}&format=mp3`;
+      
+      window.location.href = downloadUrl; // Triggers "Save As" directly!
+      showToast("Audio download started natively...", "success");
       dlModal.classList.add("hidden");
       downloadLinkInput.value = "";
     });
