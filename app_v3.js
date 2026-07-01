@@ -1657,15 +1657,28 @@ function initMusicModule() {
       if (!query) return;
 
       let videoId = "";
-      if (query.includes("v=")) {
-        videoId = query.split("v=")[1].split("&")[0];
-      } else if (query.includes("youtu.be/")) {
-        videoId = query.split("youtu.be/")[1].split("?")[0];
+      
+      // Better YouTube URL extraction
+      const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/i;
+      const match = query.match(ytRegex);
+      if (match && match[1]) {
+        videoId = match[1];
       }
       
       if (videoId) {
         if(ytSearchResults) ytSearchResults.style.display = "none";
-        playSelectedVideo(videoId, "Video Link");
+        
+        // Fetch real title
+        searchYtBtn.innerHTML = "Fetching...";
+        try {
+          const r = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+          const d = await r.json();
+          playSelectedVideo(videoId, d.title || "YouTube Video");
+        } catch(e) {
+          playSelectedVideo(videoId, "YouTube Video");
+        }
+        searchYtBtn.innerHTML = "🔍 Search / Play";
+        ytSearchInput.value = ""; // clear input
         return;
       }
 
@@ -2332,24 +2345,24 @@ function initExportFunctions(userData) {
     
     dlMp4Btn?.addEventListener("click", () => {
       if(!currentDlUrl) return;
-      // Native auto-download using our Custom Node.js Backend
-      const backendUrl = "/api"; // Vercel API
-      const downloadUrl = `${backendUrl}/download?url=${encodeURIComponent(currentDlUrl)}&format=mp4`;
       
-      window.location.href = downloadUrl; // Triggers "Save As" directly!
-      showToast("Download started natively...", "success");
+      // Redirecting to an external high-quality downloader due to local backend restrictions
+      const downloadUrl = `https://ssyoutube.com/en173RC/youtube-video-downloader?url=${encodeURIComponent(currentDlUrl)}`;
+      
+      window.open(downloadUrl, '_blank');
+      showToast("Redirecting to Secure Downloader...", "success");
       dlModal.classList.add("hidden");
       downloadLinkInput.value = "";
     });
     
     dlMp3Btn?.addEventListener("click", () => {
       if(!currentDlUrl) return;
-      // Native auto-download using our Custom Node.js Backend
-      const backendUrl = "/api"; // Vercel API
-      const downloadUrl = `${backendUrl}/download?url=${encodeURIComponent(currentDlUrl)}&format=mp3`;
       
-      window.location.href = downloadUrl; // Triggers "Save As" directly!
-      showToast("Audio download started natively...", "success");
+      // Redirecting to an external audio downloader
+      const downloadUrl = `https://ssyoutube.com/en173RC/youtube-video-downloader?url=${encodeURIComponent(currentDlUrl)}`;
+      
+      window.open(downloadUrl, '_blank');
+      showToast("Redirecting to Audio Downloader...", "success");
       dlModal.classList.add("hidden");
       downloadLinkInput.value = "";
     });
@@ -2566,3 +2579,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Check for notifications 2 seconds after load
   setTimeout(checkAdminNotifications, 2000);
 });
+setTimeout(() => {
+  const ytSearchInput = document.getElementById('ytSearchInput');
+  const searchYtBtn = document.getElementById('searchYtBtn');
+  if (ytSearchInput && searchYtBtn) {
+    ytSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        searchYtBtn.click();
+      }
+    });
+  }
+}, 1000);
