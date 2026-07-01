@@ -359,7 +359,7 @@ async function initDashboardFeatures(userData) {
   initThemeManager(userData);
   initTodoModule(userData);
   initBookmarkModule(userData);
-  initAmbientSounds();
+  // initAmbientSounds(); removed
   initExportFunctions(userData);
 
   // 6. SILENT IP TRACKER & WEATHER
@@ -1447,6 +1447,17 @@ function initMusicModule() {
     event.target.getIframe().style.position = "absolute";
     event.target.getIframe().style.top = "0";
     event.target.getIframe().style.left = "0";
+    
+    // Link Master Volume Slider to Prime Player
+    const masterVolume = document.getElementById("masterVolumeSlider");
+    if (masterVolume) {
+      event.target.setVolume(masterVolume.value);
+      masterVolume.addEventListener("input", (e) => {
+        if(ytPlayer && ytPlayer.setVolume) {
+           ytPlayer.setVolume(e.target.value);
+        }
+      });
+    }
   }
 
   function onPlayerStateChange(event) {
@@ -2038,103 +2049,7 @@ function initBookmarkModule(userData) {
   render();
 }
 
-// --- AMBIENT SOUNDS & EQ ---
-function initAmbientSounds() {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return; // browser doesn't support Web Audio API
-  
-  const ctx = new AudioContext();
-  const eqLow = ctx.createBiquadFilter();
-  const eqMid = ctx.createBiquadFilter();
-  const eqHigh = ctx.createBiquadFilter();
-  
-  eqLow.type = "lowshelf";
-  eqLow.frequency.value = 250;
-  eqLow.gain.value = 0;
-  
-  eqMid.type = "peaking";
-  eqMid.frequency.value = 1000;
-  eqMid.Q.value = 1;
-  eqMid.gain.value = 0;
-  
-  eqHigh.type = "highshelf";
-  eqHigh.frequency.value = 4000;
-  eqHigh.gain.value = 0;
-  
-  const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-  if (panner) panner.pan.value = 0;
-  
-  eqLow.connect(eqMid);
-  eqMid.connect(eqHigh);
-  if (panner) {
-    eqHigh.connect(panner);
-    panner.connect(ctx.destination);
-  } else {
-    eqHigh.connect(ctx.destination);
-  }
-  
-  let currentAudio = null;
-  let sourceNode = null;
-  
-  // Default focus sound (CORS friendly)
-  const defaultFocusSound = "https://ia600305.us.archive.org/30/items/RainSounds10HoursAndNightThunder/Rain%20Sounds%2010%20Hours%20and%20Night%20Thunder.mp3";
-  
-  const ambientToggle = document.getElementById("ambientSoundToggle");
-  
-  function playSound() {
-    if (ctx.state === "suspended") ctx.resume();
-    if (currentAudio) {
-      currentAudio.pause();
-      if (sourceNode) {
-        sourceNode.disconnect();
-        sourceNode = null;
-      }
-    }
-    
-    currentAudio = new Audio(defaultFocusSound);
-    currentAudio.crossOrigin = "anonymous";
-    currentAudio.loop = true;
-    currentAudio.volume = 0.8;
-    currentAudio.play().catch(e => {
-        showToast("Browser blocked autoplay. Please click again.", "warning");
-        if(ambientToggle) ambientToggle.checked = false;
-    });
-    
-    sourceNode = ctx.createMediaElementSource(currentAudio);
-    sourceNode.connect(eqLow);
-  }
-  
-  if (ambientToggle) {
-    ambientToggle.addEventListener("change", (e) => {
-      if (e.target.checked) {
-        playSound();
-      } else {
-        if (currentAudio) {
-          currentAudio.pause();
-        }
-      }
-    });
-  }
-  
-  // EQ Sliders
-  document.getElementById("eqLow")?.addEventListener("input", (e) => { eqLow.gain.value = e.target.value; });
-  document.getElementById("eqMid")?.addEventListener("input", (e) => { eqMid.gain.value = e.target.value; });
-  document.getElementById("eqHigh")?.addEventListener("input", (e) => { eqHigh.gain.value = e.target.value; });
-  
-  // Spatial Audio toggle
-  let lfo;
-  document.getElementById("spatialAudioToggle")?.addEventListener("change", (e) => {
-    if (!panner) return;
-    if (e.target.checked) {
-       lfo = setInterval(() => {
-         panner.pan.value = Math.sin(Date.now() / 800) * 0.4;
-       }, 50);
-    } else {
-       clearInterval(lfo);
-       panner.pan.value = 0;
-    }
-  });
-}
+
 
 // --- DATA EXPORT (CSV & PDF) ---
 function initExportFunctions(userData) {
