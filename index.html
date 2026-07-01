@@ -22,6 +22,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <!-- jsPDF for Exporting -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- HLS.js for Live TV -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <script>
     // Global Error Handler for Mobile/Desktop to catch silent errors
@@ -763,7 +765,7 @@
                       <span style="font-size: 4rem; margin-bottom: 15px; opacity: 0.9;">🍿</span>
                       <h4 style="color: #fff; font-size: 1.5rem; font-weight: 500; opacity: 0.9; text-align: center; padding: 0 20px;">Select a channel to start watching</h4>
                     </div>
-                    <iframe id="tvPlayerFrame" src="about:blank" style="width:100%; height:100%; border:none; position:absolute; top:0; left:0; z-index: 1;" allowfullscreen></iframe>
+                    <video id="tvPlayerVideo" style="width:100%; height:100%; position:absolute; top:0; left:0; z-index: 1; object-fit: contain;" controls autoplay></video>
                  </div>
 
                  <!-- Channel Grid -->

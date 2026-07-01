@@ -2203,9 +2203,11 @@ function initExportFunctions(userData) {
 function initPrimeTv() {
   const categoryList = document.getElementById("tvCategoryList");
   const channelContainer = document.getElementById("tvChannelContainer");
-  const playerFrame = document.getElementById("tvPlayerFrame");
+  const playerVideo = document.getElementById("tvPlayerVideo");
   const placeholder = document.getElementById("tvPlaceholder");
   const categoryTitle = document.getElementById("tvCurrentCategoryTitle");
+  
+  let hlsInstance = null;
 
   if (!categoryList || !channelContainer || typeof primeTvChannels === 'undefined') return;
 
@@ -2283,10 +2285,39 @@ function initPrimeTv() {
       title.style.textAlign = "center";
       title.style.fontWeight = "500";
 
-      card.onclick = () => {
+      card.onclick = async () => {
         placeholder.style.display = "none";
-        // Use dynamic backend URL so it works on both localhost and Vercel
-        playerFrame.src = `${backendUrl}/proxy/player?stream=${ch.StreamId}`;
+        playerVideo.style.display = "block";
+        
+        showToast("Loading T SPORTS...", "info");
+        
+        try {
+          const res = await fetch(`${backendUrl}/proxy/stream?id=${ch.StreamId}`);
+          const data = await res.json();
+          
+          if (data.streamUrl) {
+            if (Hls.isSupported()) {
+              if (hlsInstance) hlsInstance.destroy();
+              hlsInstance = new Hls();
+              hlsInstance.loadSource(data.streamUrl);
+              hlsInstance.attachMedia(playerVideo);
+              hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
+                playerVideo.play();
+                showToast("Playing T SPORTS HD", "success");
+              });
+              hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+                 if (data.fatal) showToast("Stream error", "danger");
+              });
+            } else if (playerVideo.canPlayType('application/vnd.apple.mpegurl')) {
+              playerVideo.src = data.streamUrl;
+              playerVideo.play();
+            }
+          } else {
+             showToast("Stream offline or blocked", "danger");
+          }
+        } catch(e) {
+           showToast("Failed to connect to stream server", "danger");
+        }
       };
 
       card.appendChild(img);
