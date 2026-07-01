@@ -107,6 +107,9 @@
             <button class="nav-item" data-tab="profileTab">
               <span class="nav-icon">⚙️</span> Settings
             </button>
+            <button class="nav-item" data-tab="storyTab" style="background: linear-gradient(90deg, rgba(168, 85, 247, 0.1), transparent); border-left: 3px solid transparent;">
+              <span class="nav-icon" style="color: #a855f7;">📖</span> Story Prompts
+            </button>
           </nav>
 
           <div class="sidebar-footer">
@@ -738,6 +741,29 @@
 
         </div> <!-- Closing trackerTab -->
 
+        <!-- NEW TAB: STORY PROMPTS -->
+        <div class="tab-content hidden" id="storyTab">
+          <header class="tab-header">
+            <div class="header-title"><h2 style="background: linear-gradient(to right, #a855f7, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">USA Story Prompts</h2></div>
+            <div class="header-desc"><p>Generate unlimited story prompts and scenes targeted for USA audiences.</p></div>
+          </header>
+          
+          <div class="glass-card" style="padding: 30px; text-align: center; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Click below to instantly generate a completely unique, highly-detailed story outline and scene breakdown. Ready to be copied into ChatGPT or Midjourney!</p>
+            
+            <button id="generateStoryBtn" class="submit-btn" style="background: linear-gradient(135deg, #a855f7, #9333ea); font-size: 1.2rem; padding: 15px 30px; border-radius: 12px; box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3);">
+              ✨ Generate New Story Prompt ✨
+            </button>
+            
+            <div style="position: relative; margin-top: 20px; text-align: left;">
+              <button id="copyStoryBtn" style="display: none; position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 6px; cursor: pointer; transition: 0.3s;">📋 Copy Prompt</button>
+              <div id="storyOutputArea" style="background: rgba(0,0,0,0.4); padding: 25px; border-radius: 12px; border: 1px solid rgba(168, 85, 247, 0.3); min-height: 200px; color: #e2e8f0; font-family: monospace; white-space: pre-wrap; font-size: 1.05rem; line-height: 1.6;">
+                Your generated story prompt will appear here...
+              </div>
+            </div>
+          </div>
+        </div>
+
           <!-- NEW TAB 5: MEDIA & DOWNLOADS -->
           <div class="tab-content hidden" id="mediaTab">
             <header class="tab-header">
@@ -893,6 +919,7 @@
   </div>
 
   <script src="app_v3.js?v=4"></script>
+  <script src="story_generator.js"></script>
   <!-- PWA Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
