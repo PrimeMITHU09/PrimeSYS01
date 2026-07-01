@@ -866,6 +866,25 @@
     </div>
   </div>
 
+  <!-- NATIVE DOWNLOAD MODAL -->
+  <div class="modal-overlay hidden" id="downloadVideoModal">
+    <div class="modal-box" style="max-width: 450px; text-align: center; padding: 30px;">
+      <h3 style="margin-bottom: 20px;">Download Media</h3>
+      <div id="downloadModalThumb" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; margin-bottom: 15px; background-size: cover; background-position: center; border: 1px solid rgba(255,255,255,0.1);"></div>
+      <p id="downloadModalTitle" style="color: var(--text-primary); font-weight: 600; font-size: 1.1rem; margin-bottom: 25px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Fetching video...</p>
+      
+      <div class="modal-actions" style="flex-direction: column; gap: 10px; margin-top: 0;">
+        <button class="modal-btn confirm-btn" id="dlMp4Btn" style="width: 100%; background: linear-gradient(135deg, var(--primary-accent), #8b5cf6); border:none; display:flex; justify-content:center; align-items:center; gap:10px;">
+          <span style="font-size:1.2rem;">🎥</span> Download Video (MP4)
+        </button>
+        <button class="modal-btn cancel-btn" id="dlMp3Btn" style="width: 100%; display:flex; justify-content:center; align-items:center; gap:10px; background: rgba(255,255,255,0.1);">
+          <span style="font-size:1.2rem;">🎵</span> Download Audio (MP3)
+        </button>
+        <button class="modal-btn cancel-btn" id="closeDlModalBtn" style="width: 100%; background: transparent; border: 1px solid rgba(255,255,255,0.1); margin-top: 5px;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script src="app_v3.js"></script>
   <!-- PWA Service Worker Registration -->
   <script>

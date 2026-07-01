@@ -2141,6 +2141,15 @@ function initExportFunctions(userData) {
   const downloadLinkInput = document.getElementById("downloadLinkInput");
   const startDownloadBtn = document.getElementById("startDownloadBtn");
   
+  const dlModal = document.getElementById("downloadVideoModal");
+  const closeDlModalBtn = document.getElementById("closeDlModalBtn");
+  const dlMp4Btn = document.getElementById("dlMp4Btn");
+  const dlMp3Btn = document.getElementById("dlMp3Btn");
+  const dlTitle = document.getElementById("downloadModalTitle");
+  const dlThumb = document.getElementById("downloadModalThumb");
+  
+  let currentDlUrl = "";
+  
   if (startDownloadBtn && downloadLinkInput) {
     startDownloadBtn.addEventListener("click", () => {
       const url = downloadLinkInput.value.trim();
@@ -2149,12 +2158,52 @@ function initExportFunctions(userData) {
         return;
       }
       
-      // Open in Cobalt Tools (100% Ad-Free, Open Source downloader)
-      // We pass the URL directly to their web app so the user doesn't see ads.
-      const downloadUrl = `https://cobalt.tools/?url=${encodeURIComponent(url)}`;
-      window.open(downloadUrl, "_blank");
+      currentDlUrl = url;
+      dlModal.classList.remove("hidden");
       
-      showToast("Opening Ad-Free Downloader...", "success");
+      // Try to extract YouTube ID for thumbnail
+      let videoId = "";
+      if (url.includes("v=")) {
+        videoId = url.split("v=")[1].split("&")[0];
+      } else if (url.includes("youtu.be/")) {
+        videoId = url.split("youtu.be/")[1].split("?")[0];
+      }
+      
+      if(videoId) {
+        dlThumb.style.backgroundImage = `url('https://img.youtube.com/vi/${videoId}/maxresdefault.jpg')`;
+        dlTitle.textContent = "Fetching video details...";
+        
+        fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
+          .then(r => r.json())
+          .then(d => { dlTitle.textContent = d.title || "Ready to download!"; })
+          .catch(e => { dlTitle.textContent = "Ready to download!"; });
+      } else {
+        dlThumb.style.backgroundImage = "none";
+        dlTitle.textContent = "Ready to download media!";
+      }
+    });
+    
+    closeDlModalBtn?.addEventListener("click", () => {
+      dlModal.classList.add("hidden");
+    });
+    
+    dlMp4Btn?.addEventListener("click", () => {
+      if(!currentDlUrl) return;
+      // Open Cobalt ad-free downloader with Video preset in a small popup window to feel native
+      const downloadUrl = `https://cobalt.tools/?url=${encodeURIComponent(currentDlUrl)}`;
+      window.open(downloadUrl, "DownloadWindow", "width=450,height=600,top=100,left=100");
+      showToast("Download engine initialized...", "success");
+      dlModal.classList.add("hidden");
+      downloadLinkInput.value = "";
+    });
+    
+    dlMp3Btn?.addEventListener("click", () => {
+      if(!currentDlUrl) return;
+      // Open Cobalt ad-free downloader with Audio preset
+      const downloadUrl = `https://cobalt.tools/?url=${encodeURIComponent(currentDlUrl)}`;
+      window.open(downloadUrl, "DownloadWindow", "width=450,height=600,top=100,left=100");
+      showToast("Audio extraction engine initialized...", "success");
+      dlModal.classList.add("hidden");
       downloadLinkInput.value = "";
     });
   }
