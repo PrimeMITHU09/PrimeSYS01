@@ -22,10 +22,10 @@
   <meta name="twitter:description" content="Organize your life with PrimeSYS. Cloud notepad, expenses, tasks, and more. Syncs across all your devices instantly.">
   <meta name="twitter:image" content="https://prime-sys-01.vercel.app/icon.svg">
 
-  <!-- Google Fonts: Outfit -->
+  <!-- Apple Font Style (Inter) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- PWA Manifest & Meta -->
   <link rel="manifest" href="manifest.json">
@@ -163,17 +163,23 @@
         </aside>
         <!-- Right Content Panels -->
         <section class="content-panel">
-          <!-- STICKY GLOBAL HEADER -->
-          <header class="global-header sticky-header">
-            <div class="search-container">
-              <span style="font-size: 1.2rem; margin-right: 10px;">🔍</span>
-              <input type="text" id="globalSearchInput" placeholder="Search notes, tasks, expenses, music...">
-            </div>
-            <div class="header-user-actions">
-              <button class="icon-btn" id="headerNotificationsBtn">🔔</button>
-              <div class="user-chip" id="headerUserChip">Guest</div>
-            </div>
-          </header>
+          <!-- Global Header -->
+            <header class="global-header sticky-header" style="position: relative;">
+              <div class="search-container">
+                <span style="font-size: 1.2rem; margin-right: 10px;">🔍</span>
+                <input type="text" id="globalSearchInput" placeholder="Search notes, tasks, expenses..." style="width: 350px; padding: 12px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: var(--text-primary); outline: none; font-size: 1rem; transition: all 0.3s ease;" onfocus="this.style.width='450px'; this.style.borderColor='var(--primary-accent)'; this.style.boxShadow='0 0 15px rgba(96, 165, 250, 0.3)';" onblur="this.style.width='350px'; this.style.borderColor='rgba(255,255,255,0.2)'; this.style.boxShadow='none';">
+              </div>
+              <div class="header-user-actions" style="position: relative;">
+                <button class="icon-btn" id="headerNotificationsBtn" style="transition: 0.3s; font-size: 1.4rem;">🔔</button>
+                <div class="user-chip" id="headerUserChip">Guest</div>
+                
+                <!-- Animated Notification Popup -->
+                <div id="notificationPopup" class="glass-card hidden" style="position: absolute; top: 55px; right: 0; width: 320px; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000; border-left: 4px solid var(--primary-accent); animation: slideDown 0.3s ease-out; text-align: left;">
+                  <h4 style="margin: 0 0 10px 0; color: #60a5fa;" id="notifPopupTitle">Notification</h4>
+                  <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;" id="notifPopupMsg">No new messages.</p>
+                </div>
+              </div>
+            </header>
 
           <!-- TAB 7: PROFILE SETTINGS & DEVICE INFO -->
           <div class="tab-content hidden" id="profileTab">

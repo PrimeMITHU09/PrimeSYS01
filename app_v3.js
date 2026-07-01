@@ -2469,9 +2469,26 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- ADMIN NOTIFICATIONS ---
 document.addEventListener("DOMContentLoaded", () => {
   const notifBtn = document.getElementById("headerNotificationsBtn");
+  const notifPopup = document.getElementById("notificationPopup");
+  const notifPopupTitle = document.getElementById("notifPopupTitle");
+  const notifPopupMsg = document.getElementById("notifPopupMsg");
+  
+  // Toggle popup on click
+  notifBtn?.addEventListener("click", () => {
+    notifPopup?.classList.toggle("hidden");
+    notifBtn.innerHTML = '🔔'; // Remove dot and animation on click
+    notifBtn.classList.remove("bell-shake");
+  });
+
+  // Hide popup when clicking outside
+  document.addEventListener("click", (evt) => {
+    if (notifBtn && notifPopup && !notifBtn.contains(evt.target) && !notifPopup.contains(evt.target)) {
+      notifPopup.classList.add("hidden");
+    }
+  });
   
   async function checkAdminNotifications() {
-    if (!notifBtn) return;
+    if (!notifBtn || !notifPopup) return;
     try {
       const res = await fetch('notifications.json?t=' + new Date().getTime());
       if (!res.ok) return;
@@ -2482,9 +2499,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!lastId || notif.id > parseInt(lastId)) {
         // We have a new notification!
         
-        // Add red dot
-        notifBtn.innerHTML = '??<span style=\"position:absolute; top:-2px; right:-2px; width:10px; height:10px; background:red; border-radius:50%; box-shadow:0 0 5px red;\"></span>';
-        notifBtn.style.position = "relative";
+        // Add red dot and shake animation
+        notifBtn.innerHTML = '🔔<span style="position:absolute; top:-2px; right:-2px; width:10px; height:10px; background:red; border-radius:50%; box-shadow:0 0 5px red;"></span>';
+        notifBtn.classList.add("bell-shake");
         
         // Play Sound (Simple Web Audio Beep)
         try {
@@ -2505,22 +2522,24 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch(e) { console.log("Audio play failed", e); }
         
         if (typeof showToast === 'function') {
-          showToast("?? New Alert: " + notif.title, "info");
+          showToast("🔔 New Alert: " + notif.title, "info");
         }
         
-        // Handle Click
-        notifBtn.onclick = () => {
-          notifBtn.innerHTML = '??'; // Remove dot
+        // Update Popup Content
+        notifPopupTitle.textContent = notif.title;
+        notifPopupMsg.textContent = notif.message;
+        
+        // Handle Click (mark as read)
+        notifBtn.addEventListener("click", () => {
           localStorage.setItem("lastNotificationId", notif.id);
-          
-          alert("Admin Notification:\\n\\n" + notif.title + "\\n" + notif.message);
-        };
+        }, {once: true});
+        
       } else {
         // Already read
-        notifBtn.innerHTML = '??';
-        notifBtn.onclick = () => {
-           alert("Latest Notification:\\n\\n" + notif.title + "\\n" + notif.message);
-        };
+        notifBtn.innerHTML = '🔔';
+        notifBtn.classList.remove("bell-shake");
+        notifPopupTitle.textContent = notif.title;
+        notifPopupMsg.textContent = notif.message;
       }
     } catch(e) {
       console.log("Notifications fetch failed or disabled.");
