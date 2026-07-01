@@ -3,27 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrimeSYS</title>
+  <title>PrimeSYS - Ultimate Personal Dashboard</title>
   <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <meta name="description" content="PrimeSYS is a secure personal dashboard with cloud notepad, smart calculator, ADB optimizer, wallpapers, and profile management.">
+  
+  <!-- SEO & Social Meta Tags -->
+  <meta name="description" content="PrimeSYS is a secure personal dashboard with cloud notepad, smart calculator, finance tracker, bookmarks, and real-time sync.">
+  <meta name="keywords" content="personal dashboard, notepad, finance tracker, productivity app, prime sys, primesys, task manager">
+  <meta name="author" content="PrimeSYS">
+  
+  <meta property="og:title" content="PrimeSYS - Your Personal Cloud Dashboard">
+  <meta property="og:description" content="Organize your life with PrimeSYS. Cloud notepad, expenses, tasks, and more. Syncs across all your devices instantly.">
+  <meta property="og:image" content="https://prime-sys-01.vercel.app/icon.svg">
+  <meta property="og:url" content="https://prime-sys-01.vercel.app">
+  <meta property="og:type" content="website">
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PrimeSYS - Your Personal Cloud Dashboard">
+  <meta name="twitter:description" content="Organize your life with PrimeSYS. Cloud notepad, expenses, tasks, and more. Syncs across all your devices instantly.">
+  <meta name="twitter:image" content="https://prime-sys-01.vercel.app/icon.svg">
+
   <!-- Google Fonts: Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
   <!-- PWA Manifest & Meta -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#080c14">
   <link rel="apple-touch-icon" href="icon.svg">
+  
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=3.1.0">
+  <link rel="stylesheet" href="style.css?v=3.2.0">
+  
   <!-- Firebase SDKs (Compat format for ease of use) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  
   <!-- jsPDF for Exporting -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <!-- HLS.js for Live TV -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
   <script>
     // Global Error Handler for Mobile/Desktop to catch silent errors
@@ -136,6 +154,18 @@
         </aside>
         <!-- Right Content Panels -->
         <section class="content-panel">
+          <!-- STICKY GLOBAL HEADER -->
+          <header class="global-header sticky-header">
+            <div class="search-container">
+              <span style="font-size: 1.2rem; margin-right: 10px;">🔍</span>
+              <input type="text" id="globalSearchInput" placeholder="Search notes, tasks, expenses, music...">
+            </div>
+            <div class="header-user-actions">
+              <button class="icon-btn" id="headerNotificationsBtn">🔔</button>
+              <div class="user-chip" id="headerUserChip">Guest</div>
+            </div>
+          </header>
+
           <!-- TAB 7: PROFILE SETTINGS & DEVICE INFO -->
           <div class="tab-content hidden" id="profileTab">
             <header class="tab-header">
@@ -933,11 +963,79 @@
           </div>
         </div> <!-- End of mediaTab -->
 
-          </section>
-      </div>
+          <!-- Global Footer -->
+          <footer class="global-footer">
+            <div class="footer-links">
+              <a href="#" id="openAboutLink">About PrimeSYS</a>
+              <a href="#" id="openPrivacyBtn">Privacy Policy</a>
+              <a href="#" id="openTermsBtn">Terms of Service</a>
+            </div>
+            <div class="footer-copyright">
+              &copy; 2026 PrimeSYS. All rights reserved. Built for USA Audiences.
+            </div>
+          </footer>
 
+          </section>
+        </div>
+  
+      </div>
+    </main>
+
+    <!-- PRIVACY POLICY MODAL -->
+    <div id="privacyModal" class="modal hidden">
+      <div class="modal-content glass-card" style="max-width: 600px; padding: 30px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px; margin-bottom:20px;">
+          <h2 style="margin:0; font-size:1.5rem; color:#fff;">Privacy Policy</h2>
+          <span class="close" id="closePrivacyModal" style="font-size:2rem; cursor:pointer;">&times;</span>
+        </div>
+        <div style="color:var(--text-secondary); line-height:1.6; max-height:400px; overflow-y:auto;">
+          <p>At PrimeSYS, your privacy is our priority. We collect minimal data necessary to provide you with an optimal experience.</p>
+          <p><strong>1. Data Collection:</strong> We do not track your browsing history or sell your personal data. Data saved in your dashboard is securely stored in your browser's local storage or synced securely via Google Firebase.</p>
+          <p><strong>2. Third-Party Services:</strong> We use Firebase for authentication and database syncing. We do not share your data with advertisers.</p>
+          <p><strong>3. Your Rights:</strong> You have the right to request deletion of your account and all associated data at any time via the Settings menu.</p>
+          <p><em>Last updated: Today.</em></p>
+        </div>
+      </div>
     </div>
-  </main>
+
+    <!-- TERMS OF SERVICE MODAL -->
+    <div id="termsModal" class="modal hidden">
+      <div class="modal-content glass-card" style="max-width: 600px; padding: 30px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px; margin-bottom:20px;">
+          <h2 style="margin:0; font-size:1.5rem; color:#fff;">Terms of Service</h2>
+          <span class="close" id="closeTermsModal" style="font-size:2rem; cursor:pointer;">&times;</span>
+        </div>
+        <div style="color:var(--text-secondary); line-height:1.6; max-height:400px; overflow-y:auto;">
+          <p>By using PrimeSYS, you agree to the following terms:</p>
+          <p><strong>1. Acceptable Use:</strong> You agree not to misuse our services or help anyone else do so. Do not try to access the system using a method other than the interface and instructions we provide.</p>
+          <p><strong>2. User Content:</strong> You retain ownership of any intellectual property rights that you hold in the content you submit to PrimeSYS.</p>
+          <p><strong>3. Warranties & Disclaimers:</strong> We provide our services using a commercially reasonable level of skill and care. However, we do not make specific promises about the services, such as their reliability or availability.</p>
+          <p><em>Last updated: Today.</em></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT MODAL -->
+    <div id="aboutModal" class="modal hidden">
+      <div class="modal-content glass-card" style="max-width: 600px; padding: 30px; text-align: center;">
+        <img src="icon.svg" style="width: 80px; height: 80px; border-radius: 20px; margin-bottom: 20px;" alt="PrimeSYS Logo">
+        <h2 style="margin:0 0 10px 0; font-size:2rem; color:#fff;">PrimeSYS</h2>
+        <p style="color:#60a5fa; margin-bottom: 25px; font-weight: 500;">Your Ultimate Personal Dashboard</p>
+        
+        <div style="color:var(--text-secondary); line-height:1.6; text-align: left; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px;">
+          <p><strong>Vision:</strong> Built to empower users in the USA and worldwide with a blazing-fast, secure, and unified workspace for managing everyday life.</p>
+          <p style="margin-top: 15px;"><strong>Key Highlights:</strong></p>
+          <ul style="padding-left: 20px; margin-top: 5px;">
+            <li>Real-time Cloud Sync across all devices</li>
+            <li>Advanced Notepad with Markdown export</li>
+            <li>Smart Finance & Expense Tracker</li>
+            <li>Zero-latency Local-First Architecture</li>
+          </ul>
+        </div>
+        
+        <button id="closeAboutModalBtn" class="submit-btn" style="margin-top: 25px; width: 100%; max-width: 200px;">Close</button>
+      </div>
+    </div>
 
   <!-- TERMINATE SESSION MODAL -->
   <div class="modal-overlay hidden" id="terminateModal">
