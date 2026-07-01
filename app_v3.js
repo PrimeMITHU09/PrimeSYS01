@@ -2588,5 +2588,14 @@ setTimeout(() => {
         searchYtBtn.click();
       }
     });
+    
+    // Auto-detect pasted YouTube links
+    ytSearchInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/i;
+      if (ytRegex.test(val)) {
+        searchYtBtn.click();
+      }
+    });
   }
 }, 1000);
