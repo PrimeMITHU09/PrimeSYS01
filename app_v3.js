@@ -2198,3 +2198,99 @@ function initExportFunctions(userData) {
   }
 
 } // End initDashboardFeatures
+
+// --- PRIME TV LOGIC ---
+function initPrimeTv() {
+  const categoryList = document.getElementById("tvCategoryList");
+  const channelContainer = document.getElementById("tvChannelContainer");
+  const playerFrame = document.getElementById("tvPlayerFrame");
+  const placeholder = document.getElementById("tvPlaceholder");
+  const categoryTitle = document.getElementById("tvCurrentCategoryTitle");
+
+  if (!categoryList || !channelContainer || typeof primeTvChannels === 'undefined') return;
+
+  // Extract unique categories
+  const categories = ["All", ...new Set(primeTvChannels.map(c => c.Category))];
+  
+  let currentCategory = "All";
+
+  function renderCategories() {
+    categoryList.innerHTML = "";
+    categories.forEach(cat => {
+      const btn = document.createElement("button");
+      btn.className = `mode-pill ${cat === currentCategory ? 'active' : ''}`;
+      btn.style.textAlign = "left";
+      btn.style.width = "100%";
+      btn.style.marginBottom = "5px";
+      btn.innerText = cat;
+      btn.onclick = () => {
+        currentCategory = cat;
+        categoryTitle.innerText = cat + " Channels";
+        renderCategories();
+        renderChannels();
+      };
+      categoryList.appendChild(btn);
+    });
+  }
+
+  function renderChannels() {
+    channelContainer.innerHTML = "";
+    const filtered = currentCategory === "All" ? primeTvChannels : primeTvChannels.filter(c => c.Category === currentCategory);
+    
+    filtered.forEach(ch => {
+      const card = document.createElement("div");
+      card.style.background = "rgba(0,0,0,0.3)";
+      card.style.borderRadius = "12px";
+      card.style.padding = "10px";
+      card.style.cursor = "pointer";
+      card.style.transition = "transform 0.2s, background 0.2s, box-shadow 0.2s";
+      card.style.border = "1px solid rgba(255,255,255,0.05)";
+      card.style.display = "flex";
+      card.style.flexDirection = "column";
+      card.style.alignItems = "center";
+      card.style.gap = "10px";
+
+      card.onmouseenter = () => { 
+        card.style.transform = "translateY(-5px) scale(1.02)"; 
+        card.style.background = "rgba(255,255,255,0.1)"; 
+        card.style.boxShadow = "0 10px 20px rgba(0,0,0,0.3)";
+      };
+      card.onmouseleave = () => { 
+        card.style.transform = "translateY(0) scale(1)"; 
+        card.style.background = "rgba(0,0,0,0.3)"; 
+        card.style.boxShadow = "none";
+      };
+
+      const img = document.createElement("img");
+      img.src = ch.Logo;
+      img.alt = ch.Name;
+      img.style.width = "100%";
+      img.style.aspectRatio = "16/9";
+      img.style.objectFit = "contain";
+      img.style.borderRadius = "8px";
+      img.style.background = "rgba(255,255,255,0.02)";
+
+      const title = document.createElement("div");
+      title.innerText = ch.Name;
+      title.style.fontSize = "0.8rem";
+      title.style.color = "var(--text-primary)";
+      title.style.textAlign = "center";
+      title.style.fontWeight = "500";
+
+      card.onclick = () => {
+        placeholder.style.display = "none";
+        playerFrame.src = `http://redforce.live/player.php?stream=${ch.StreamId}`;
+      };
+
+      card.appendChild(img);
+      card.appendChild(title);
+      channelContainer.appendChild(card);
+    });
+  }
+
+  renderCategories();
+  renderChannels();
+}
+
+document.addEventListener("DOMContentLoaded", initPrimeTv);
+
