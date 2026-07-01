@@ -66,6 +66,64 @@ app.get('/api/proxy/stream', (req, res) => {
   proxyReq.end();
 });
 
+app.get('/tv_player', (req, res) => {
+  const streamId = req.query.id;
+  if (!streamId) return res.status(400).send('No stream ID provided');
+  
+  const options = {
+    hostname: 'redforce.live',
+    path: `/player.php?stream=${streamId}`,
+    method: 'GET',
+    headers: {
+      'Referer': 'http://redforce.live/',
+      'User-Agent': 'Mozilla/5.0'
+    }
+  };
+
+  const proxyReq = http.request(options, (proxyRes) => {
+    let data = '';
+    proxyRes.on('data', (chunk) => { data += chunk; });
+    proxyRes.on('end', () => {
+      const match = data.match(/var primarySource = '(.*?)';/);
+      if (match && match[1]) {
+        const streamUrl = match[1];
+        res.send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+            <style>
+              body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+              video { width: 100%; height: 100%; object-fit: contain; }
+            </style>
+          </head>
+          <body>
+            <video id="video" controls autoplay></video>
+            <script>
+              const video = document.getElementById('video');
+              const url = "${streamUrl}";
+              if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.play();
+              }
+            </script>
+          </body>
+          </html>
+        `);
+      } else {
+        res.status(404).send('<h1 style="color:white;">Stream not found</h1>');
+      }
+    });
+  });
+  proxyReq.end();
+});
+
 app.get('/api/proxy/image', (req, res) => {
   const imageUrl = req.query.url;
   if (!imageUrl) return res.status(400).send('No URL provided');

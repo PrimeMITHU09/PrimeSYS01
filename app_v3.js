@@ -2203,11 +2203,9 @@ function initExportFunctions(userData) {
 function initPrimeTv() {
   const categoryList = document.getElementById("tvCategoryList");
   const channelContainer = document.getElementById("tvChannelContainer");
-  const playerVideo = document.getElementById("tvPlayerVideo");
+  const playerBridge = document.getElementById("tvPlayerBridge");
   const placeholder = document.getElementById("tvPlaceholder");
   const categoryTitle = document.getElementById("tvCurrentCategoryTitle");
-  
-  let hlsInstance = null;
 
   if (!categoryList || !channelContainer || typeof primeTvChannels === 'undefined') return;
 
@@ -2268,8 +2266,8 @@ function initPrimeTv() {
       };
 
       const img = document.createElement("img");
-      // Use proxy to avoid Mixed Content (HTTPS to HTTP) and CORS issues
-      img.src = `${backendUrl}/proxy/image?url=${encodeURIComponent(ch.Logo)}`;
+      // Use base64 or original URL directly
+      img.src = ch.Logo;
       img.alt = ch.Name;
       img.referrerPolicy = "no-referrer";
       img.style.width = "100%";
@@ -2285,39 +2283,16 @@ function initPrimeTv() {
       title.style.textAlign = "center";
       title.style.fontWeight = "500";
 
-      card.onclick = async () => {
+      card.onclick = () => {
         placeholder.style.display = "none";
-        playerVideo.style.display = "block";
+        playerBridge.style.display = "block";
         
-        showToast("Loading T SPORTS...", "info");
+        showToast("Connecting to Local Bridge...", "info");
         
-        try {
-          const res = await fetch(`${backendUrl}/proxy/stream?id=${ch.StreamId}`);
-          const data = await res.json();
-          
-          if (data.streamUrl) {
-            if (Hls.isSupported()) {
-              if (hlsInstance) hlsInstance.destroy();
-              hlsInstance = new Hls();
-              hlsInstance.loadSource(data.streamUrl);
-              hlsInstance.attachMedia(playerVideo);
-              hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
-                playerVideo.play();
-                showToast("Playing T SPORTS HD", "success");
-              });
-              hlsInstance.on(Hls.Events.ERROR, function (event, data) {
-                 if (data.fatal) showToast("Stream error", "danger");
-              });
-            } else if (playerVideo.canPlayType('application/vnd.apple.mpegurl')) {
-              playerVideo.src = data.streamUrl;
-              playerVideo.play();
-            }
-          } else {
-             showToast("Stream offline or blocked", "danger");
-          }
-        } catch(e) {
-           showToast("Failed to connect to stream server", "danger");
-        }
+        // This relies on the user running node server.js on their PC!
+        // The iframe will load HTTP inside HTTPS which is allowed ONLY for localhost.
+        // It completely bypasses Redforce blocking Vercel AND Mixed Content blocks!
+        playerBridge.src = `http://localhost:3000/tv_player?id=${ch.StreamId}`;
       };
 
       card.appendChild(img);
