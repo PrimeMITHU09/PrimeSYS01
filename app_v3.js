@@ -2262,8 +2262,10 @@ function initPrimeTv() {
       };
 
       const img = document.createElement("img");
-      img.src = ch.Logo;
+      // Use proxy to avoid Mixed Content (HTTPS to HTTP) and CORS issues
+      img.src = `/api/proxy/image?url=${encodeURIComponent(ch.Logo)}`;
       img.alt = ch.Name;
+      img.referrerPolicy = "no-referrer";
       img.style.width = "100%";
       img.style.aspectRatio = "16/9";
       img.style.objectFit = "contain";
@@ -2279,7 +2281,8 @@ function initPrimeTv() {
 
       card.onclick = () => {
         placeholder.style.display = "none";
-        playerFrame.src = `http://redforce.live/player.php?stream=${ch.StreamId}`;
+        // Use relative /api/proxy/player so it works on both localhost and Vercel
+        playerFrame.src = `/api/proxy/player?stream=${ch.StreamId}`;
       };
 
       card.appendChild(img);
