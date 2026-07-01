@@ -113,12 +113,12 @@
           <button class="nav-item" data-tab="primePlayerTab">
             <span class="icon">▶️</span> Prime Player
           </button>
-          <button class="nav-item" data-tab="converterTab">
-              <span class="nav-icon">🧮</span> Converter
-            </button>
-            <button class="nav-item" data-tab="expenseTab">
-              <span class="nav-icon">📈</span> Expenses
-            </button>
+          <button class="nav-item" data-tab="financeTab">
+            <span class="icon">💼</span> Finance & Tools
+          </button>
+          <button class="nav-item" data-tab="downloadTab">
+            <span class="icon">📥</span> Download Video
+          </button>
             <button class="nav-item" data-tab="profileTab">
               <span class="nav-icon">⚙️</span> Settings
             </button>
@@ -536,7 +536,7 @@
                 <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, var(--primary-accent), #8b5cf6); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px var(--accent-glow);">
                   <span style="font-size: 24px; color: white;">▶</span>
                 </div>
-                <h3 style="font-size: 1.8rem; font-weight: 700; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">PRIME PLAYER</h3>
+                <h3 style="font-size: 1.8rem; font-weight: 700; background: linear-gradient(to right, var(--text-primary), var(--text-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">PRIME PLAYER</h3>
               </div>
 
               <!-- Input Section -->
@@ -549,91 +549,111 @@
               
               <!-- Video Player Container -->
               <div class="iframe-container" style="position: relative; width: 100%; max-width: 850px; margin: 0 auto; border-radius: 20px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.6); aspect-ratio: 16/9; background: #000; border: 1px solid rgba(255,255,255,0.05);">
-                <div id="ytPlayerDiv" style="position: absolute; top:0; left:0; width:100%; height:100%;"></div>
+                <!-- Placeholder Screen -->
+                <div id="ytPlaceholder" style="position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.4);">
+                  <span style="font-size: 3rem; margin-bottom: 15px; opacity: 0.8;">🎬</span>
+                  <h4 style="color: #fff; font-size: 1.2rem; font-weight: 500; opacity: 0.9; text-align: center; padding: 0 20px;">Please paste YouTube Video link to play video</h4>
+                </div>
+                <div id="ytPlayerDiv" style="position: absolute; top:0; left:0; width:100%; height:100%; display: none;"></div>
               </div>
             </div>
           </div>
 
-          <div class="tab-content hidden" id="converterTab">
+          <!-- NEW FINANCE & TOOLS TAB -->
+          <div class="tab-content hidden" id="financeTab">
             <header class="tab-header">
-              <div class="header-title"><h2>Smart Converter</h2></div>
-              <div class="header-desc"><p>Convert currencies, length, and weight instantly.</p></div>
+              <div class="header-title"><h2>Finance & Tools</h2></div>
+              <div class="header-desc"><p>Manage expenses and smart conversions all in one place.</p></div>
             </header>
-            <div class="converter-wrapper">
-              <div class="converter-tabs">
-                <button class="conv-tab active" data-type="currency">Currency</button>
-                <button class="conv-tab" data-type="length">Length</button>
-                <button class="conv-tab" data-type="weight">Weight</button>
-                <button class="conv-tab" data-type="temperature">Temp</button>
-                <button class="conv-tab" data-type="data">Data</button>
-                <button class="conv-tab" data-type="time">Time</button>
-              </div>
-              <div class="converter-body">
-                <div class="conv-row">
-                  <input type="number" id="convInput1" value="1" placeholder="Amount">
-                  <select id="convSelect1"></select>
-                </div>
-                <div class="conv-swap">↕</div>
-                <div class="conv-row">
-                  <input type="number" id="convInput2" placeholder="Result" disabled>
-                  <select id="convSelect2"></select>
-                </div>
-                <div class="conv-status" id="convStatus">Live exchange rates active.</div>
-              </div>
+            
+            <div class="calc-mode-selector" style="margin-bottom: 24px; max-width: 500px;">
+              <button class="mode-pill sub-tab-btn active" data-subtab="expenseContent">📈 Expenses</button>
+              <button class="mode-pill sub-tab-btn" data-subtab="converterContent">🧮 Converter</button>
             </div>
-          </div>
-
-          <!-- TAB 6: EXPENSE TRACKER -->
-          <div class="tab-content hidden" id="expenseTab">
-            <header class="tab-header">
-              <div class="header-title"><h2>Expense Tracker</h2></div>
-              <div class="header-desc"><p>Monitor your daily income and expenditures.</p></div>
-              <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="submit-btn" id="exportExpCsvBtn" style="padding:6px 12px; width:auto; font-size:0.8rem; background:rgba(255,255,255,0.1);">Export CSV</button>
-                <button class="submit-btn" id="exportExpPdfBtn" style="padding:6px 12px; width:auto; font-size:0.8rem; background:rgba(255,255,255,0.1);">Export PDF</button>
-              </div>
-            </header>
-            <div class="expense-wrapper">
-              <div class="expense-dashboard">
-                <div class="expense-overview-row">
-                  <div class="exp-card balance">
-                    <span>Total Balance</span>
-                    <h3 id="expTotalBal">$0.00</h3>
-                  </div>
-                  <div class="exp-pie-chart-container">
-                    <div class="pie-chart" id="expensePieChart"></div>
-                    <div class="pie-legend">
-                      <div class="leg-item"><span class="leg-color inc-c"></span> Income</div>
-                      <div class="leg-item"><span class="leg-color exc-c"></span> Expense</div>
+            
+            <div id="expenseContent" class="sub-tab-pane">
+              <div class="expense-wrapper">
+                <div style="display:flex; gap:10px; margin-bottom:15px; justify-content: flex-end;">
+                  <button class="submit-btn" id="exportExpCsvBtn" style="padding:6px 12px; width:auto; font-size:0.8rem; background:rgba(255,255,255,0.1);">Export CSV</button>
+                  <button class="submit-btn" id="exportExpPdfBtn" style="padding:6px 12px; width:auto; font-size:0.8rem; background:rgba(255,255,255,0.1);">Export PDF</button>
+                </div>
+                <div class="expense-dashboard">
+                  <div class="expense-overview-row" style="display: flex; gap: 15px;">
+                    <div class="exp-card balance" style="flex: 1;">
+                      <span>Total Balance</span>
+                      <h3 id="expTotalBal">$0.00</h3>
+                    </div>
+                    <div class="exp-card income" style="flex: 1;">
+                      <span>Income <span style="color:var(--success-color)">▲</span></span>
+                      <h4 id="expTotalInc" style="color:var(--success-color)">+$0.00</h4>
+                    </div>
+                    <div class="exp-card expense" style="flex: 1;">
+                      <span>Expense <span style="color:var(--danger-color)">▼</span></span>
+                      <h4 id="expTotalExp" style="color:var(--danger-color)">-$0.00</h4>
                     </div>
                   </div>
                 </div>
-                <div class="exp-row">
-                  <div class="exp-card income">
-                    <span>Income ⬇</span>
-                    <h4 id="expTotalInc">+$0.00</h4>
-                  </div>
-                  <div class="exp-card expense">
-                    <span>Expense ⬆</span>
-                    <h4 id="expTotalExp">-$0.00</h4>
+                <div class="expense-form">
+                  <input type="text" id="expTitle" placeholder="e.g., AAPL Stock / Groceries">
+                  <input type="number" id="expAmt" placeholder="Amount ($)">
+                  <select id="expType">
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                  </select>
+                  <button class="add-exp-btn" id="addExpBtn">Execute Trade</button>
+                </div>
+                <div class="expense-list-container" style="border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:15px;">
+                  <h4 style="margin-bottom:15px; color:var(--text-secondary); letter-spacing:1px; font-size:0.9rem; text-transform:uppercase;">Recent Activity (Ticker)</h4>
+                  <div class="expense-list" id="expenseList" style="display:flex; flex-direction:column; gap:5px;">
+                    <!-- JS injected transactions -->
                   </div>
                 </div>
               </div>
-              <div class="expense-form">
-                <input type="text" id="expTitle" placeholder="e.g., Groceries">
-                <input type="number" id="expAmt" placeholder="Amount ($)">
-                <select id="expType">
-                  <option value="expense">Expense</option>
-                  <option value="income">Income</option>
-                </select>
-                <button class="add-exp-btn" id="addExpBtn">Add Transaction</button>
-              </div>
-              <div class="expense-list-container">
-                <h4>Recent Transactions</h4>
-                <div class="expense-list" id="expenseList">
-                  <!-- JS injected transactions -->
+            </div>
+
+            <div id="converterContent" class="sub-tab-pane hidden">
+              <div class="converter-wrapper">
+                <div class="converter-tabs">
+                  <button class="conv-tab active" data-type="currency">Currency</button>
+                  <button class="conv-tab" data-type="length">Length</button>
+                  <button class="conv-tab" data-type="weight">Weight</button>
+                  <button class="conv-tab" data-type="temperature">Temp</button>
+                  <button class="conv-tab" data-type="data">Data</button>
+                  <button class="conv-tab" data-type="time">Time</button>
+                </div>
+                <div class="converter-body">
+                  <div class="conv-row">
+                    <input type="number" id="convInput1" value="1" placeholder="Amount">
+                    <select id="convSelect1"></select>
+                  </div>
+                  <div class="conv-swap">↕</div>
+                  <div class="conv-row">
+                    <input type="number" id="convInput2" placeholder="Result" disabled>
+                    <select id="convSelect2"></select>
+                  </div>
+                  <div class="conv-status" id="convStatus">Live exchange rates active.</div>
                 </div>
               </div>
+            </div>
+          </div>
+          
+          <!-- NEW DOWNLOAD VIDEO TAB -->
+          <div class="tab-content hidden" id="downloadTab">
+            <header class="tab-header">
+              <div class="header-title"><h2>Video Downloader</h2></div>
+              <div class="header-desc"><p>Paste any supported video link to download it to your device.</p></div>
+            </header>
+            
+            <div class="glass-card" style="padding: 30px; text-align: center; border-radius: 20px;">
+              <div style="font-size: 3rem; margin-bottom: 20px;">⬇️</div>
+              <h3 style="font-size: 1.5rem; margin-bottom: 20px;">Save Media Offline</h3>
+              <div style="display:flex; gap:15px; justify-content:center; max-width: 600px; margin: 0 auto 20px auto;">
+                <input type="text" id="downloadLinkInput" placeholder="Paste video URL here..." style="flex:1; padding: 15px 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); color: var(--text-primary); font-size: 1rem; outline:none;">
+                <button class="submit-btn" id="startDownloadBtn" style="margin:0; width: auto; padding: 0 30px; border-radius: 30px; font-weight: 600; background: var(--success-color);">
+                  Download
+                </button>
+              </div>
+              <p style="color: var(--text-secondary); font-size: 0.9rem;">Supports YouTube, Facebook, Twitter, and more.</p>
             </div>
           </div>
 

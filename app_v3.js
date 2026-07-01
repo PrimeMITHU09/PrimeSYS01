@@ -1390,7 +1390,6 @@ function initMusicModule() {
     ytPlayer = new YT.Player('ytPlayerDiv', {
       height: '100%',
       width: '100%',
-      videoId: 'jfKfPfyJRdk',
       playerVars: {
         'autoplay': 0,
         'playsinline': 1,
@@ -1530,6 +1529,10 @@ function initMusicModule() {
 
   function setVideo(videoId) {
     if (ytPlayer && ytPlayer.loadVideoById) {
+      const ph = document.getElementById("ytPlaceholder");
+      const pdiv = document.getElementById("ytPlayerDiv");
+      if(ph) ph.style.display = "none";
+      if(pdiv) pdiv.style.display = "block";
       ytPlayer.loadVideoById(videoId);
     }
   }
@@ -1708,15 +1711,26 @@ function initExpenseModule() {
       else exp += amt;
       
       const div = document.createElement("div");
-      div.className = `exp-item ${e.type === "income" ? "inc" : "exc"}`;
+      div.className = `exp-item trader-ticker`;
+      div.style.display = "flex";
+      div.style.justifyContent = "space-between";
+      div.style.alignItems = "center";
+      div.style.padding = "12px 15px";
+      div.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+      div.style.background = "rgba(0,0,0,0.2)";
+      div.style.borderRadius = "8px";
       div.innerHTML = `
-        <div class="exp-info">
-          <span class="exp-title">${e.title}</span>
-          <span class="exp-date">${new Date(e.date).toLocaleDateString()}</span>
+        <div class="exp-info" style="display:flex; flex-direction:column; gap:4px;">
+          <span class="exp-title" style="font-weight:600; font-size:1.05rem; font-family:monospace; color:var(--text-primary); letter-spacing:0.5px;">${e.title.toUpperCase()}</span>
+          <span class="exp-date" style="font-size:0.75rem; color:var(--text-secondary);">${new Date(e.date).toLocaleDateString()} ${new Date(e.date).toLocaleTimeString([],{hour:'2-digit', minute:'2-digit'})}</span>
         </div>
         <div style="display:flex;align-items:center;gap:15px;">
-          <span class="exp-amt">${e.type === "income" ? "+" : "-"}$${amt.toFixed(2)}</span>
-          <button class="exp-del" onclick="deleteExpense(${i})">🗑</button>
+          <div style="text-align:right;">
+            <span class="exp-amt" style="font-family:monospace; font-weight:700; font-size:1.1rem; color: ${e.type === "income" ? "var(--success-color)" : "var(--danger-color)"}">
+              ${e.type === "income" ? "▲" : "▼"} $${amt.toFixed(2)}
+            </span>
+          </div>
+          <button class="exp-del" onclick="deleteExpense(${i})" style="background:transparent; color:var(--text-secondary); border:none; cursor:pointer; font-size:1.5rem; transition:0.2s; line-height:1;" onmouseover="this.style.color='var(--danger-color)'" onmouseout="this.style.color='var(--text-secondary)'">×</button>
         </div>
       `;
       listEl.appendChild(div);
@@ -1725,18 +1739,6 @@ function initExpenseModule() {
     tInc.textContent = `+$${inc.toFixed(2)}`;
     tExp.textContent = `-$${exp.toFixed(2)}`;
     tBal.textContent = `$${(inc - exp).toFixed(2)}`;
-
-    // Update Pie Chart
-    const pieEl = document.getElementById("expensePieChart");
-    if(pieEl) {
-      if(inc === 0 && exp === 0) {
-        pieEl.style.background = "conic-gradient(rgba(255,255,255,0.1) 0% 100%)";
-      } else {
-        const total = inc + exp;
-        const incPct = (inc / total) * 100;
-        pieEl.style.background = `conic-gradient(#34d399 0% ${incPct}%, #ef4444 ${incPct}% 100%)`;
-      }
-    }
   }
   
   window.deleteExpense = function(i) {
@@ -1993,8 +1995,8 @@ function initAmbientSounds() {
   let currentAudio = null;
   let sourceNode = null;
   
-  // Default focus sound
-  const defaultFocusSound = "https://actions.google.com/sounds/v1/water/ocean_waves.ogg";
+  // Default focus sound (CORS friendly)
+  const defaultFocusSound = "https://ia600305.us.archive.org/30/items/RainSounds10HoursAndNightThunder/Rain%20Sounds%2010%20Hours%20and%20Night%20Thunder.mp3";
   
   const ambientToggle = document.getElementById("ambientSoundToggle");
   
@@ -2119,4 +2121,41 @@ function initExportFunctions(userData) {
     doc.save("PrimeSYS_Expenses.pdf");
     showToast("PDF Exported successfully!", "success");
   });
-}
+
+  // --- NEW: FINANCE SUB-TABS ---
+  const subTabBtns = document.querySelectorAll(".sub-tab-btn");
+  const subTabPanes = document.querySelectorAll(".sub-tab-pane");
+  
+  subTabBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      subTabBtns.forEach(b => b.classList.remove("active"));
+      subTabPanes.forEach(p => p.classList.add("hidden"));
+      
+      btn.classList.add("active");
+      const target = document.getElementById(btn.getAttribute("data-subtab"));
+      if (target) target.classList.remove("hidden");
+    });
+  });
+
+  // --- NEW: DOWNLOAD VIDEO LOGIC ---
+  const downloadLinkInput = document.getElementById("downloadLinkInput");
+  const startDownloadBtn = document.getElementById("startDownloadBtn");
+  
+  if (startDownloadBtn && downloadLinkInput) {
+    startDownloadBtn.addEventListener("click", () => {
+      const url = downloadLinkInput.value.trim();
+      if (!url) {
+        showToast("Please enter a valid video link.", "error");
+        return;
+      }
+      
+      // Open in a reliable 3rd party downloader, e.g. savefrom.net
+      const downloadUrl = `https://en.savefrom.net/1-youtube-video-downloader-360/?url=${encodeURIComponent(url)}`;
+      window.open(downloadUrl, "_blank");
+      
+      showToast("Opening downloader...", "success");
+      downloadLinkInput.value = "";
+    });
+  }
+
+} // End initDashboardFeatures
