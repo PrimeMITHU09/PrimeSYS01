@@ -83,8 +83,8 @@ async function updateLocalData(updates) {
   // Save to LocalStorage immediately for snappy UI
   localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
 
-  // Sync to Firestore if enabled
-  if (currentData.cloudSyncEnabled && typeof auth !== 'undefined' && auth.currentUser && typeof firestoreDb !== 'undefined') {
+  // Sync to Firestore always if logged in
+  if (typeof auth !== 'undefined' && auth.currentUser && typeof firestoreDb !== 'undefined') {
     try {
       await firestoreDb.collection("users").doc(auth.currentUser.uid).set(currentData);
     } catch (err) {
@@ -150,11 +150,9 @@ document.addEventListener("DOMContentLoaded", () => {
               const docRef = await firestoreDb.collection("users").doc(user.uid).get();
               if (docRef.exists) {
                 const cloudData = docRef.data();
-                if (cloudData.cloudSyncEnabled) {
-                   dbData = cloudData;
-                   localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
-                   showToast("☁️ Data synced from Cloud", "info");
-                }
+                dbData = cloudData;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
+                showToast("☁️ Data synced from Cloud", "info");
               }
             } catch(syncErr) {
               console.error("Sync fetch error:", syncErr);
@@ -1925,16 +1923,7 @@ function initThemeManager(userData) {
     });
   });
 
-  const cloudSyncToggle = document.getElementById("cloudSyncToggle");
-  if (cloudSyncToggle) {
-    cloudSyncToggle.checked = !!userData.cloudSyncEnabled;
-    cloudSyncToggle.addEventListener("change", (e) => {
-      userData.cloudSyncEnabled = e.target.checked;
-      updateLocalData({ cloudSyncEnabled: e.target.checked }).then(() => {
-        showToast(e.target.checked ? "☁️ Cloud Sync Enabled" : "📱 Cloud Sync Disabled", "info");
-      });
-    });
-  }
+
 }
 
 // --- TO-DO LIST MODULE ---
