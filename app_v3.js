@@ -1771,14 +1771,16 @@ function initExpenseModule() {
 
 // --- THEME MANAGER ---
 function initThemeManager(userData) {
-  const settings = userData.themeSettings || { mode: "dark", accent: "#6366f1" };
+  const settings = userData.themeSettings || { mode: "dark", accent: "#6366f1", macosGlass: false };
   const root = document.documentElement;
   const body = document.body;
   
   function applyTheme() {
     body.classList.remove("theme-light", "theme-macos");
     if (settings.mode === "light") body.classList.add("theme-light");
-    else if (settings.mode === "macos") body.classList.add("theme-macos");
+    
+    if (settings.macosGlass) body.classList.add("theme-macos");
+    
     root.style.setProperty("--primary-accent", settings.accent);
     root.style.setProperty("--accent-glow", settings.accent + "33");
   }
@@ -1787,6 +1789,17 @@ function initThemeManager(userData) {
 
   const themeBtns = document.querySelectorAll(".theme-selector");
   const colorSwatches = document.querySelectorAll(".color-swatch");
+  const macosToggle = document.getElementById("macosGlassToggle");
+  
+  if (macosToggle) {
+    macosToggle.checked = !!settings.macosGlass;
+    macosToggle.addEventListener("change", (e) => {
+      settings.macosGlass = e.target.checked;
+      applyTheme();
+      userData.themeSettings = settings;
+      updateLocalData({ themeSettings: settings });
+    });
+  }
   
   themeBtns.forEach(btn => {
     if (btn.getAttribute("data-theme") === settings.mode) {
@@ -1980,18 +1993,12 @@ function initAmbientSounds() {
   let currentAudio = null;
   let sourceNode = null;
   
-  // Real ambient sound URLs for focus
-  const sounds = {
-    rain: "https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg",
-    cafe: "https://actions.google.com/sounds/v1/crowds/restaurant_chatter.ogg",
-    forest: "https://actions.google.com/sounds/v1/water/creek.ogg",
-    waves: "https://actions.google.com/sounds/v1/water/ocean_waves.ogg"
-  };
+  // Default focus sound
+  const defaultFocusSound = "https://actions.google.com/sounds/v1/water/ocean_waves.ogg";
   
-  const btns = document.querySelectorAll(".sound-btn");
-  const stopBtn = document.getElementById("stopAmbientBtn");
+  const ambientToggle = document.getElementById("ambientSoundToggle");
   
-  function playSound(type) {
+  function playSound() {
     if (ctx.state === "suspended") ctx.resume();
     if (currentAudio) {
       currentAudio.pause();
@@ -2001,31 +2008,27 @@ function initAmbientSounds() {
       }
     }
     
-    currentAudio = new Audio(sounds[type]);
+    currentAudio = new Audio(defaultFocusSound);
     currentAudio.crossOrigin = "anonymous";
     currentAudio.loop = true;
     currentAudio.volume = 0.8;
     currentAudio.play().catch(e => {
         showToast("Browser blocked autoplay. Please click again.", "warning");
+        if(ambientToggle) ambientToggle.checked = false;
     });
     
     sourceNode = ctx.createMediaElementSource(currentAudio);
     sourceNode.connect(eqLow);
   }
   
-  btns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      btns.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      playSound(btn.getAttribute("data-sound"));
-    });
-  });
-  
-  if (stopBtn) {
-    stopBtn.addEventListener("click", () => {
-      btns.forEach(b => b.classList.remove("active"));
-      if (currentAudio) {
-        currentAudio.pause();
+  if (ambientToggle) {
+    ambientToggle.addEventListener("change", (e) => {
+      if (e.target.checked) {
+        playSound();
+      } else {
+        if (currentAudio) {
+          currentAudio.pause();
+        }
       }
     });
   }
