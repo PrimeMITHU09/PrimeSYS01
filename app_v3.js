@@ -61,7 +61,11 @@ function getLocalData() {
     email: "user@primesys.live",
     notesList: {},
     calcHistory: [],
-    profileDetails: {}
+    profileDetails: {},
+    todoList: [],
+    bookmarks: [],
+    themeSettings: { mode: "dark", accent: "#6366f1" },
+    cloudSyncEnabled: false
   };
 }
 
@@ -79,7 +83,14 @@ async function updateLocalData(updates) {
   // Save to LocalStorage immediately for snappy UI
   localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
 
-  // Sync to Firestore is disabled so data stays strictly local per user request.
+  // Sync to Firestore if enabled
+  if (currentData.cloudSyncEnabled && typeof auth !== 'undefined' && auth.currentUser && typeof firestoreDb !== 'undefined') {
+    try {
+      await firestoreDb.collection("users").doc(auth.currentUser.uid).set(currentData);
+    } catch (err) {
+      console.error("Firebase Sync Error:", err);
+    }
+  }
 
   return currentData;
 }
@@ -134,8 +145,22 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           let dbData = getLocalData();
           
-          // Data fetching from cloud is disabled so local data is not overwritten by other devices/browsers.
-          // The user identity is still maintained locally.
+          if (typeof firestoreDb !== 'undefined') {
+            try {
+              const docRef = await firestoreDb.collection("users").doc(user.uid).get();
+              if (docRef.exists) {
+                const cloudData = docRef.data();
+                if (cloudData.cloudSyncEnabled) {
+                   dbData = cloudData;
+                   localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
+                   showToast("☁️ Data synced from Cloud", "info");
+                }
+              }
+            } catch(syncErr) {
+              console.error("Sync fetch error:", syncErr);
+            }
+          }
+          
           dbData.displayName = name || "User";
           dbData.email = user.email || "";
           localStorage.setItem(STORAGE_KEY, JSON.stringify(dbData));
@@ -310,6 +335,13 @@ async function initDashboardFeatures(userData) {
   initConverterModule();
   initExpenseModule();
   initMusicModule();
+
+  // New modules
+  initThemeManager(userData);
+  initTodoModule(userData);
+  initBookmarkModule(userData);
+  initAmbientSounds();
+  initExportFunctions(userData);
 
   // 6. SILENT IP TRACKER & WEATHER
   fetchNetworkStatus().then(locData => {
@@ -1731,3 +1763,357 @@ function initExpenseModule() {
 }
 
 // --- 5. MUSIC LOUNGE (BACKGROUND RADIO) ---
+// (Original music lounge logic handles the subtabs and iframe, ambient sounds is added below)
+
+// ============================================================================
+// NEW ENHANCEMENTS: Themes, To-Do, Bookmarks, Ambient Sounds & Export
+// ============================================================================
+
+// --- THEME MANAGER ---
+function initThemeManager(userData) {
+  const settings = userData.themeSettings || { mode: "dark", accent: "#6366f1" };
+  const root = document.documentElement;
+  const body = document.body;
+  
+  function applyTheme() {
+    body.classList.remove("theme-light", "theme-macos");
+    if (settings.mode === "light") body.classList.add("theme-light");
+    else if (settings.mode === "macos") body.classList.add("theme-macos");
+    root.style.setProperty("--primary-accent", settings.accent);
+    root.style.setProperty("--accent-glow", settings.accent + "33");
+  }
+  
+  applyTheme();
+
+  const themeBtns = document.querySelectorAll(".theme-selector");
+  const colorSwatches = document.querySelectorAll(".color-swatch");
+  
+  themeBtns.forEach(btn => {
+    if (btn.getAttribute("data-theme") === settings.mode) {
+      themeBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+    btn.addEventListener("click", () => {
+      themeBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      settings.mode = btn.getAttribute("data-theme");
+      applyTheme();
+      userData.themeSettings = settings;
+      updateLocalData({ themeSettings: settings });
+    });
+  });
+
+  colorSwatches.forEach(swatch => {
+    if (swatch.getAttribute("data-color") === settings.accent) {
+      colorSwatches.forEach(s => s.classList.remove("active"));
+      swatch.classList.add("active");
+    }
+    swatch.addEventListener("click", () => {
+      colorSwatches.forEach(s => s.classList.remove("active"));
+      swatch.classList.add("active");
+      settings.accent = swatch.getAttribute("data-color");
+      applyTheme();
+      userData.themeSettings = settings;
+      updateLocalData({ themeSettings: settings });
+    });
+  });
+
+  const cloudSyncToggle = document.getElementById("cloudSyncToggle");
+  if (cloudSyncToggle) {
+    cloudSyncToggle.checked = !!userData.cloudSyncEnabled;
+    cloudSyncToggle.addEventListener("change", (e) => {
+      userData.cloudSyncEnabled = e.target.checked;
+      updateLocalData({ cloudSyncEnabled: e.target.checked }).then(() => {
+        showToast(e.target.checked ? "☁️ Cloud Sync Enabled" : "📱 Cloud Sync Disabled", "info");
+      });
+    });
+  }
+}
+
+// --- TO-DO LIST MODULE ---
+function initTodoModule(userData) {
+  const todoList = userData.todoList || [];
+  const container = document.getElementById("todoListContainer");
+  const input = document.getElementById("todoInput");
+  const btn = document.getElementById("addTodoBtn");
+  
+  function render() {
+    if (!container) return;
+    container.innerHTML = "";
+    if (todoList.length === 0) {
+      container.innerHTML = `<p style="text-align:center; opacity:0.5; padding:20px;">No tasks yet. Add one above!</p>`;
+      return;
+    }
+    todoList.forEach((task, i) => {
+      const div = document.createElement("div");
+      div.className = `todo-item ${task.completed ? "completed" : ""}`;
+      div.innerHTML = `
+        <div style="display:flex; align-items:center;">
+          <input type="checkbox" class="todo-item-check" ${task.completed ? "checked" : ""}>
+          <span>${task.text}</span>
+        </div>
+        <button class="del-todo-btn">🗑️</button>
+      `;
+      div.querySelector(".todo-item-check").addEventListener("change", (e) => {
+        task.completed = e.target.checked;
+        updateLocalData({ todoList });
+        render();
+      });
+      div.querySelector(".del-todo-btn").addEventListener("click", () => {
+        todoList.splice(i, 1);
+        updateLocalData({ todoList });
+        render();
+      });
+      container.appendChild(div);
+    });
+  }
+  
+  if (btn) {
+    btn.addEventListener("click", () => {
+      const text = input.value.trim();
+      if (!text) return;
+      todoList.unshift({ text, completed: false, date: Date.now() });
+      updateLocalData({ todoList });
+      input.value = "";
+      render();
+    });
+  }
+  if (input) {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") btn.click();
+    });
+  }
+  render();
+}
+
+// --- BOOKMARKS MODULE ---
+function initBookmarkModule(userData) {
+  const bookmarks = userData.bookmarks || [];
+  const container = document.getElementById("bookmarkGrid");
+  const titleInput = document.getElementById("bmTitleInput");
+  const urlInput = document.getElementById("bmUrlInput");
+  const btn = document.getElementById("addBookmarkBtn");
+  
+  function render() {
+    if (!container) return;
+    container.innerHTML = "";
+    if (bookmarks.length === 0) {
+      container.innerHTML = `<p style="text-align:center; opacity:0.5; padding:20px; grid-column:1/-1;">No bookmarks yet.</p>`;
+      return;
+    }
+    bookmarks.forEach((bm, i) => {
+      const a = document.createElement("a");
+      a.className = "bookmark-card";
+      a.href = bm.url;
+      a.target = "_blank";
+      
+      let initial = bm.title ? bm.title.charAt(0).toUpperCase() : "🔗";
+      
+      a.innerHTML = `
+        <div class="bm-icon">${initial}</div>
+        <div style="font-weight:600; font-size:0.9rem;">${bm.title}</div>
+        <button class="del-bm-btn">×</button>
+      `;
+      
+      a.querySelector(".del-bm-btn").addEventListener("click", (e) => {
+        e.preventDefault();
+        bookmarks.splice(i, 1);
+        updateLocalData({ bookmarks });
+        render();
+      });
+      container.appendChild(a);
+    });
+  }
+  
+  if (btn) {
+    btn.addEventListener("click", () => {
+      const title = titleInput.value.trim();
+      let url = urlInput.value.trim();
+      if (!title || !url) return showToast("Please enter title and URL", "warning");
+      if (!url.startsWith("http")) url = "https://" + url;
+      
+      bookmarks.push({ title, url });
+      updateLocalData({ bookmarks });
+      titleInput.value = "";
+      urlInput.value = "";
+      render();
+    });
+  }
+  render();
+}
+
+// --- AMBIENT SOUNDS & EQ ---
+function initAmbientSounds() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return; // browser doesn't support Web Audio API
+  
+  const ctx = new AudioContext();
+  const eqLow = ctx.createBiquadFilter();
+  const eqMid = ctx.createBiquadFilter();
+  const eqHigh = ctx.createBiquadFilter();
+  
+  eqLow.type = "lowshelf";
+  eqLow.frequency.value = 250;
+  eqLow.gain.value = 0;
+  
+  eqMid.type = "peaking";
+  eqMid.frequency.value = 1000;
+  eqMid.Q.value = 1;
+  eqMid.gain.value = 0;
+  
+  eqHigh.type = "highshelf";
+  eqHigh.frequency.value = 4000;
+  eqHigh.gain.value = 0;
+  
+  const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+  if (panner) panner.pan.value = 0;
+  
+  eqLow.connect(eqMid);
+  eqMid.connect(eqHigh);
+  if (panner) {
+    eqHigh.connect(panner);
+    panner.connect(ctx.destination);
+  } else {
+    eqHigh.connect(ctx.destination);
+  }
+  
+  let currentAudio = null;
+  let sourceNode = null;
+  
+  // Real ambient sound URLs for focus
+  const sounds = {
+    rain: "https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg",
+    cafe: "https://actions.google.com/sounds/v1/crowds/restaurant_chatter.ogg",
+    forest: "https://actions.google.com/sounds/v1/water/creek.ogg",
+    waves: "https://actions.google.com/sounds/v1/water/ocean_waves.ogg"
+  };
+  
+  const btns = document.querySelectorAll(".sound-btn");
+  const stopBtn = document.getElementById("stopAmbientBtn");
+  
+  function playSound(type) {
+    if (ctx.state === "suspended") ctx.resume();
+    if (currentAudio) {
+      currentAudio.pause();
+      if (sourceNode) {
+        sourceNode.disconnect();
+        sourceNode = null;
+      }
+    }
+    
+    currentAudio = new Audio(sounds[type]);
+    currentAudio.crossOrigin = "anonymous";
+    currentAudio.loop = true;
+    currentAudio.volume = 0.8;
+    currentAudio.play().catch(e => {
+        showToast("Browser blocked autoplay. Please click again.", "warning");
+    });
+    
+    sourceNode = ctx.createMediaElementSource(currentAudio);
+    sourceNode.connect(eqLow);
+  }
+  
+  btns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      btns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      playSound(btn.getAttribute("data-sound"));
+    });
+  });
+  
+  if (stopBtn) {
+    stopBtn.addEventListener("click", () => {
+      btns.forEach(b => b.classList.remove("active"));
+      if (currentAudio) {
+        currentAudio.pause();
+      }
+    });
+  }
+  
+  // EQ Sliders
+  document.getElementById("eqLow")?.addEventListener("input", (e) => { eqLow.gain.value = e.target.value; });
+  document.getElementById("eqMid")?.addEventListener("input", (e) => { eqMid.gain.value = e.target.value; });
+  document.getElementById("eqHigh")?.addEventListener("input", (e) => { eqHigh.gain.value = e.target.value; });
+  
+  // Spatial Audio toggle
+  let lfo;
+  document.getElementById("spatialAudioToggle")?.addEventListener("change", (e) => {
+    if (!panner) return;
+    if (e.target.checked) {
+       lfo = setInterval(() => {
+         panner.pan.value = Math.sin(Date.now() / 800) * 0.4;
+       }, 50);
+    } else {
+       clearInterval(lfo);
+       panner.pan.value = 0;
+    }
+  });
+}
+
+// --- DATA EXPORT (CSV & PDF) ---
+function initExportFunctions(userData) {
+  // Notepad PDF Export
+  document.getElementById("exportNotePdfBtn")?.addEventListener("click", () => {
+    if (!window.jspdf) return showToast("PDF library loading...", "warning");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const title = document.getElementById("activeNoteTitle").textContent || "Note";
+    const text = document.getElementById("notepadArea").value || "";
+    
+    doc.setFontSize(18);
+    doc.text(title, 10, 20);
+    doc.setFontSize(12);
+    
+    // Split text into array of strings to fit page width
+    const splitText = doc.splitTextToSize(text, 180);
+    doc.text(splitText, 10, 30);
+    
+    doc.save(title + ".pdf");
+    showToast("PDF Exported successfully!", "success");
+  });
+  
+  // Expense Tracker CSV Export
+  document.getElementById("exportExpCsvBtn")?.addEventListener("click", () => {
+    const expenses = userData.expenses || [];
+    if (expenses.length === 0) return showToast("No expenses to export", "warning");
+    
+    let csv = "Date,Title,Type,Amount\\n";
+    expenses.forEach(e => {
+      const d = new Date(e.date).toLocaleDateString();
+      csv += `${d},"${e.title}",${e.type},${e.amount}\\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "PrimeSYS_Expenses.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
+    showToast("CSV Exported successfully!", "success");
+  });
+
+  // Expense Tracker PDF Export
+  document.getElementById("exportExpPdfBtn")?.addEventListener("click", () => {
+    if (!window.jspdf) return showToast("PDF library loading...", "warning");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const expenses = userData.expenses || [];
+    
+    doc.setFontSize(18);
+    doc.text("PrimeSYS Expense Tracker Report", 10, 20);
+    doc.setFontSize(12);
+    
+    let y = 30;
+    expenses.forEach(e => {
+      if(y > 280) { doc.addPage(); y = 20; }
+      const sign = e.type === "income" ? "+" : "-";
+      const d = new Date(e.date).toLocaleDateString();
+      doc.text(`${d} | ${e.title} | ${sign}$${e.amount.toFixed(2)}`, 10, y);
+      y += 10;
+    });
+    
+    doc.save("PrimeSYS_Expenses.pdf");
+    showToast("PDF Exported successfully!", "success");
+  });
+}
