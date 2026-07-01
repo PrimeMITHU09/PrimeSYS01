@@ -1371,8 +1371,14 @@ function initMusicModule() {
     });
   });
 
-  const ytLinkInput = document.getElementById("ytLinkInput");
-  const playYtBtn = document.getElementById("playYtBtn");
+  const ytSearchInput = document.getElementById("ytSearchInput");
+  const searchYtBtn = document.getElementById("searchYtBtn");
+  const ytSearchResults = document.getElementById("ytSearchResults");
+  const ytPlayerControls = document.getElementById("ytPlayerControls");
+  const pipBtn = document.getElementById("pipBtn");
+  const downloadCurrentYtBtn = document.getElementById("downloadCurrentYtBtn");
+  
+  let currentPlayingVideoId = null;
   const historyList = document.getElementById("musicHistoryList");
   
   let ytPlayer = null;
@@ -1537,35 +1543,88 @@ function initMusicModule() {
     }
   }
 
-  if (playYtBtn && ytLinkInput) {
-    playYtBtn.addEventListener("click", () => {
-      const url = ytLinkInput.value.trim();
-      if(!url) return;
-      
+  if (searchYtBtn && ytSearchInput) {
+    searchYtBtn.addEventListener("click", async () => {
+      const query = ytSearchInput.value.trim();
+      if (!query) return;
+
       let videoId = "";
-      if (url.includes("v=")) {
-        videoId = url.split("v=")[1].split("&")[0];
-      } else if (url.includes("youtu.be/")) {
-        videoId = url.split("youtu.be/")[1].split("?")[0];
-      } else {
-        if (ytPlayer && ytPlayer.loadPlaylist) {
-          ytPlayer.loadPlaylist({list: url, listType: "search"});
-          addHistory(`Search: ${url}`, url, "search");
-        }
+      if (query.includes("v=")) {
+        videoId = query.split("v=")[1].split("&")[0];
+      } else if (query.includes("youtu.be/")) {
+        videoId = query.split("youtu.be/")[1].split("?")[0];
+      }
+      
+      if (videoId) {
+        if(ytSearchResults) ytSearchResults.style.display = "none";
+        playSelectedVideo(videoId, "Video Link");
         return;
       }
 
-      if (videoId) {
-        setVideo(videoId);
-        fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
-          .then(res => res.json())
-          .then(data => {
-            addHistory(data.title || `Video: ${videoId}`, videoId, "vid");
-          })
-          .catch(() => {
-            addHistory(`Video: ${videoId}`, videoId, "vid");
-          });
+      // Otherwise do a search
+      searchYtBtn.innerHTML = "⏳ Searching...";
+      try {
+        const res = await fetch(`https://vid.puffyan.us/api/v1/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        
+        if (ytSearchResults) {
+          ytSearchResults.innerHTML = "";
+          ytSearchResults.style.display = "flex";
+          
+          const videos = data.filter(d => d.type === "video").slice(0, 6);
+          if (videos.length === 0) {
+            ytSearchResults.innerHTML = "<p style='text-align:center;color:#fff;'>No results found.</p>";
+          } else {
+            videos.forEach(v => {
+              const item = document.createElement("div");
+              item.style.cssText = "display:flex; gap:15px; padding:10px; border-radius:10px; background:rgba(255,255,255,0.05); cursor:pointer; align-items:center; transition:background 0.3s;";
+              item.onmouseenter = () => item.style.background = "rgba(255,255,255,0.1)";
+              item.onmouseleave = () => item.style.background = "rgba(255,255,255,0.05)";
+              item.innerHTML = `
+                <img src="https://i.ytimg.com/vi/${v.videoId}/mqdefault.jpg" style="width:120px; border-radius:8px; aspect-ratio:16/9; object-fit:cover;">
+                <div style="flex:1;">
+                  <h4 style="font-size:1rem; margin-bottom:5px; color:#fff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${v.title}</h4>
+                  <span style="font-size:0.8rem; color:var(--text-secondary);">${v.author} • ${v.publishedText || ''}</span>
+                </div>
+              `;
+              item.onclick = () => {
+                ytSearchResults.style.display = "none";
+                playSelectedVideo(v.videoId, v.title);
+              };
+              ytSearchResults.appendChild(item);
+            });
+          }
+        }
+      } catch (err) {
+        if (typeof showToast === 'function') showToast("Search failed. Try pasting a direct link instead.", "error");
       }
+      searchYtBtn.innerHTML = "🔍 Search / Play";
+    });
+  }
+
+  function playSelectedVideo(videoId, title) {
+    currentPlayingVideoId = videoId;
+    setVideo(videoId);
+    if(ytPlayerControls) ytPlayerControls.style.display = "flex";
+    if (typeof addHistory === 'function') {
+      addHistory(title || `Video: ${videoId}`, videoId, "vid");
+    }
+  }
+
+  if (pipBtn) {
+    pipBtn.addEventListener("click", () => {
+      if (typeof showToast === 'function') {
+        showToast("Right-click twice on the video and select 'Picture in picture' to float it!", "info");
+      }
+    });
+  }
+
+  if (downloadCurrentYtBtn) {
+    downloadCurrentYtBtn.addEventListener("click", () => {
+      if(!currentPlayingVideoId) return;
+      const downloadUrl = `https://ssyoutube.com/en18/?url=https://www.youtube.com/watch?v=${currentPlayingVideoId}`;
+      window.open(downloadUrl, '_blank');
+      if (typeof showToast === 'function') showToast("Opening secure downloader...", "success");
     });
   }
   
