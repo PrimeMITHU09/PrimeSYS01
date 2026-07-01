@@ -2209,6 +2209,10 @@ function initPrimeTv() {
 
   if (!categoryList || !channelContainer || typeof primeTvChannels === 'undefined') return;
 
+  const backendUrl = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") 
+    ? "http://localhost:3000/api" 
+    : "/api";
+
   // Extract unique categories
   const categories = ["All", ...new Set(primeTvChannels.map(c => c.Category))];
   
@@ -2263,7 +2267,7 @@ function initPrimeTv() {
 
       const img = document.createElement("img");
       // Use proxy to avoid Mixed Content (HTTPS to HTTP) and CORS issues
-      img.src = `/api/proxy/image?url=${encodeURIComponent(ch.Logo)}`;
+      img.src = `${backendUrl}/proxy/image?url=${encodeURIComponent(ch.Logo)}`;
       img.alt = ch.Name;
       img.referrerPolicy = "no-referrer";
       img.style.width = "100%";
@@ -2281,8 +2285,8 @@ function initPrimeTv() {
 
       card.onclick = () => {
         placeholder.style.display = "none";
-        // Use relative /api/proxy/player so it works on both localhost and Vercel
-        playerFrame.src = `/api/proxy/player?stream=${ch.StreamId}`;
+        // Use dynamic backend URL so it works on both localhost and Vercel
+        playerFrame.src = `${backendUrl}/proxy/player?stream=${ch.StreamId}`;
       };
 
       card.appendChild(img);
