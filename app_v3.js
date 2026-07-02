@@ -2589,13 +2589,6 @@ setTimeout(() => {
       }
     });
     
-    // Auto-detect pasted YouTube links
-    ytSearchInput.addEventListener('input', (e) => {
-      const val = e.target.value.trim();
-      const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/i;
-      if (ytRegex.test(val)) {
-        searchYtBtn.click();
-      }
-    });
+    // Auto-detect pasted YouTube links feature removed to prevent auto-play on paste
   }
 }, 1000);
