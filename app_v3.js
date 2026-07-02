@@ -2223,6 +2223,32 @@ function initExportFunctions(userData) {
     showToast("⬇️ Markdown Exported successfully!", "success");
   });
 
+  // Notepad CSS Export
+  document.getElementById("exportNoteCss")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (exportNoteMenu) exportNoteMenu.style.display = "none";
+    const { title, text } = getNoteData();
+    const blob = new Blob([text], { type: "text/css" });
+    const a = document.createElement("a");
+    a.href = window.URL.createObjectURL(blob);
+    a.download = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".css";
+    a.click();
+    showToast("🎨 CSS Exported successfully!", "success");
+  });
+
+  // Notepad HTML Export
+  document.getElementById("exportNoteHtml")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (exportNoteMenu) exportNoteMenu.style.display = "none";
+    const { title, text } = getNoteData();
+    const blob = new Blob([text], { type: "text/html" });
+    const a = document.createElement("a");
+    a.href = window.URL.createObjectURL(blob);
+    a.download = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + ".html";
+    a.click();
+    showToast("🌐 HTML Exported successfully!", "success");
+  });
+
   // Full Account Backup (JSON)
   document.getElementById("exportFullBackupBtn")?.addEventListener("click", () => {
     const rawData = localStorage.getItem(STORAGE_KEY) || "{}";
@@ -2343,29 +2369,11 @@ function initExportFunctions(userData) {
         return;
       }
       
-      currentDlUrl = url;
-      dlModal.classList.remove("hidden");
-      
-      // Try to extract YouTube ID for thumbnail
-      let videoId = "";
-      if (url.includes("v=")) {
-        videoId = url.split("v=")[1].split("&")[0];
-      } else if (url.includes("youtu.be/")) {
-        videoId = url.split("youtu.be/")[1].split("?")[0];
-      }
-      
-      if(videoId) {
-        dlThumb.style.backgroundImage = `url('https://img.youtube.com/vi/${videoId}/maxresdefault.jpg')`;
-        dlTitle.textContent = "Fetching video details...";
-        
-        fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
-          .then(r => r.json())
-          .then(d => { dlTitle.textContent = d.title || "Ready to download!"; })
-          .catch(e => { dlTitle.textContent = "Ready to download!"; });
-      } else {
-        dlThumb.style.backgroundImage = "none";
-        dlTitle.textContent = "Ready to download media!";
-      }
+      // Directly redirecting to external downloader as a "fresh UI"
+      const downloadUrl = `https://ssyoutube.com/en173RC/youtube-video-downloader?url=${encodeURIComponent(url)}`;
+      window.open(downloadUrl, '_blank');
+      showToast("Redirecting to Secure Downloader...", "success");
+      downloadLinkInput.value = "";
     });
     
     closeDlModalBtn?.addEventListener("click", () => {
