@@ -538,6 +538,7 @@ function initNotepadModule(userData) {
       const note = userNotes[id];
       const btn = document.createElement("button");
       btn.className = `note-item ${activeNoteId === id ? "active" : ""}`;
+      btn.dataset.noteId = id;
       btn.textContent = note.title || "Untitled Note";
       btn.addEventListener("click", () => {
         selectNote(id);
@@ -2474,6 +2475,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (n.title?.toLowerCase().includes(q) || n.content?.toLowerCase().includes(q)) {
           addResult("📝 Note", n.title || "Untitled Note", () => {
             document.querySelector('[data-tab="notepadTab"]')?.click();
+            setTimeout(() => {
+              const noteBtn = document.querySelector(`.note-item[data-note-id="${n.id}"]`);
+              if (noteBtn) noteBtn.click();
+            }, 50);
           });
           resultsCount++;
         }
@@ -2490,6 +2495,43 @@ document.addEventListener("DOMContentLoaded", () => {
       (db.calcHistory || []).forEach(c => {
         if (c.toLowerCase().includes(q)) {
           addResult("🧮 Calculation", c, () => document.querySelector('[data-tab="calculatorTab"]')?.click());
+          resultsCount++;
+        }
+      });
+      // Search Music History
+      (db.musicHistory || []).forEach(m => {
+        if (m.title?.toLowerCase().includes(q)) {
+          addResult("🎵 Music", m.title, () => document.querySelector('[data-tab="mediaTab"]')?.click());
+          resultsCount++;
+        }
+      });
+      
+      // Search App Pages / A2Z
+      const pages = [
+        { title: "Notepad / Notes Editor", tab: "notepadTab" },
+        { title: "Organizer / Tasks / Todo List", tab: "organizerTab" },
+        { title: "Weather Forecast / Information", tab: "organizerTab" },
+        { title: "Focus Timer / Pomodoro", tab: "organizerTab" },
+        { title: "Calculator / Math / Basic / Standard / Scientific", tab: "calculatorTab" },
+        { title: "Business Calculator / Margin / Profit", tab: "calculatorTab", sub: "calcBusinessPanel" },
+        { title: "Music Lounge / YouTube Player", tab: "mediaTab" },
+        { title: "Profile / Identity & Settings", tab: "profileTab" },
+        { title: "Theme & Display Settings", tab: "profileTab", subBtn: "themeSettingsContent" },
+        { title: "System Hardware & Device Info", tab: "profileTab", subBtn: "deviceInfoContent" }
+      ];
+
+      pages.forEach(p => {
+        if (p.title.toLowerCase().includes(q)) {
+          addResult("🌐 App Page", p.title.split(" / ")[0], () => {
+            document.querySelector(`[data-tab="${p.tab}"]`)?.click();
+            if (p.sub) {
+               // specific for calc panels where pill is data-mode
+               setTimeout(() => document.querySelector(`[data-mode="business"]`)?.click(), 100);
+            }
+            if (p.subBtn) {
+               setTimeout(() => document.querySelector(`[data-subtab="${p.subBtn}"]`)?.click(), 100);
+            }
+          });
           resultsCount++;
         }
       });
