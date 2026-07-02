@@ -775,6 +775,7 @@ function initCalculatorHub(userData) {
   const modePills = document.querySelectorAll("#calcTab .mode-pill");
   const basicPanel = document.getElementById("calcBasicPanel");
   const standardPanel = document.getElementById("calcStandardPanel");
+  const scientificPanel = document.getElementById("calcScientificPanel");
   const businessPanel = document.getElementById("calcBusinessPanel");
 
   const calcFormula = document.getElementById("calcFormula");
@@ -828,6 +829,7 @@ function initCalculatorHub(userData) {
       
       basicPanel.classList.add("hidden");
       standardPanel.classList.add("hidden");
+      scientificPanel.classList.add("hidden");
       businessPanel.classList.add("hidden");
       
       calcFormula.textContent = "";
@@ -837,6 +839,8 @@ function initCalculatorHub(userData) {
         basicPanel.classList.remove("hidden");
       } else if (mode === "standard") {
         standardPanel.classList.remove("hidden");
+      } else if (mode === "scientific") {
+        scientificPanel.classList.remove("hidden");
       } else {
         businessPanel.classList.remove("hidden");
       }
@@ -860,6 +864,14 @@ function initCalculatorHub(userData) {
       } else if (val === "back") {
         if (expression.endsWith("Math.sqrt(")) {
           expression = expression.slice(0, -10);
+        } else if (expression.endsWith("Math.sin(") || expression.endsWith("Math.cos(") || expression.endsWith("Math.tan(") || expression.endsWith("Math.log(")) {
+          expression = expression.slice(0, -9);
+        } else if (expression.endsWith("Math.log10(")) {
+          expression = expression.slice(0, -11);
+        } else if (expression.endsWith("Math.PI")) {
+          expression = expression.slice(0, -7);
+        } else if (expression.endsWith("Math.E")) {
+          expression = expression.slice(0, -6);
         } else {
           expression = expression.slice(0, -1);
         }
@@ -869,7 +881,14 @@ function initCalculatorHub(userData) {
           .replace(/\+/g, " + ")
           .replace(/-/g, " - ")
           .replace(/\*\*/g, " ^ ")
-          .replace(/Math\.sqrt\(/g, "√(");
+          .replace(/Math\.sqrt\(/g, "√(")
+          .replace(/Math\.sin\(/g, "sin(")
+          .replace(/Math\.cos\(/g, "cos(")
+          .replace(/Math\.tan\(/g, "tan(")
+          .replace(/Math\.log\(/g, "ln(")
+          .replace(/Math\.log10\(/g, "log(")
+          .replace(/Math\.PI/g, "π")
+          .replace(/Math\.E/g, "e");
         calcScreen.textContent = displayExpr || "0";
       } else if (val === "=") {
         if (!expression) return;
@@ -888,7 +907,7 @@ function initCalculatorHub(userData) {
           expression = "";
         }
       } else {
-        const operators = ["+", "-", "*", "/", "%", "**", "(", ")", "Math.sqrt("];
+        const operators = ["+", "-", "*", "/", "%", "**", "(", ")", "Math.sqrt(", "Math.sin(", "Math.cos(", "Math.tan(", "Math.log(", "Math.log10(", "Math.PI", "Math.E"];
         
         let displayVal = val;
         if (val === "*") displayVal = " × ";
@@ -897,6 +916,13 @@ function initCalculatorHub(userData) {
         else if (val === "-") displayVal = " - ";
         else if (val === "**") displayVal = " ^ ";
         else if (val === "Math.sqrt(") displayVal = "√(";
+        else if (val === "Math.sin(") displayVal = "sin(";
+        else if (val === "Math.cos(") displayVal = "cos(";
+        else if (val === "Math.tan(") displayVal = "tan(";
+        else if (val === "Math.log(") displayVal = "ln(";
+        else if (val === "Math.log10(") displayVal = "log(";
+        else if (val === "Math.PI") displayVal = "π";
+        else if (val === "Math.E") displayVal = "e";
 
         if (calcScreen.textContent === "0" && !operators.includes(val)) {
           expression = val;
