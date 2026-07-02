@@ -86,7 +86,9 @@ async function updateLocalData(updates) {
   // Sync to Firestore always if logged in
   if (typeof auth !== 'undefined' && auth.currentUser && typeof firestoreDb !== 'undefined') {
     try {
-      await firestoreDb.collection("users").doc(auth.currentUser.uid).set(currentData);
+      firestoreDb.collection("users").doc(auth.currentUser.uid).set(currentData).catch(err => {
+        console.error("Firebase Sync Error:", err);
+      });
     } catch (err) {
       console.error("Firebase Sync Error:", err);
     }
@@ -2468,32 +2470,26 @@ document.addEventListener("DOMContentLoaded", () => {
       let resultsCount = 0;
       
       // Search Notes
-      db.notes?.forEach(n => {
-        if (n.title.toLowerCase().includes(q) || n.text.toLowerCase().includes(q)) {
-          addResult("📝 Note", n.title, () => {
+      Object.values(db.notesList || {}).forEach(n => {
+        if (n.title?.toLowerCase().includes(q) || n.content?.toLowerCase().includes(q)) {
+          addResult("📝 Note", n.title || "Untitled Note", () => {
             document.querySelector('[data-tab="notepadTab"]')?.click();
           });
           resultsCount++;
         }
       });
-      // Search Expenses
-      db.expenses?.forEach(e => {
-        if (e.title.toLowerCase().includes(q)) {
-          addResult("💸 Expense", e.title + " ($" + e.amount + ")", () => document.querySelector('[data-tab="financeTab"]')?.click());
-          resultsCount++;
-        }
-      });
       // Search Tasks
-      db.tasks?.forEach(t => {
-        if (t.text.toLowerCase().includes(q)) {
-          addResult("✅ Task", t.text, () => document.querySelector('[data-tab="organizerTab"]')?.click());
+      (db.todoList || []).forEach(t => {
+        const text = typeof t === "string" ? t : (t.text || t.title || "");
+        if (text.toLowerCase().includes(q)) {
+          addResult("✅ Task", text, () => document.querySelector('[data-tab="organizerTab"]')?.click());
           resultsCount++;
         }
       });
-      // Search Music
-      db.playlist?.forEach(m => {
-        if (m.title.toLowerCase().includes(q)) {
-          addResult("🎵 Music", m.title, () => document.querySelector('[data-tab="mediaTab"]')?.click());
+      // Search Calculator History
+      (db.calcHistory || []).forEach(c => {
+        if (c.toLowerCase().includes(q)) {
+          addResult("🧮 Calculation", c, () => document.querySelector('[data-tab="calculatorTab"]')?.click());
           resultsCount++;
         }
       });

@@ -24,8 +24,8 @@ body.theme-light {
   --bg-color: #f8fafc;
   --card-bg: rgba(255, 255, 255, 0.85);
   --card-border: rgba(0, 0, 0, 0.05);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --text-primary: #000000;
+  --text-secondary: #333333;
   --input-bg: rgba(0, 0, 0, 0.03);
   --input-border: rgba(0, 0, 0, 0.1);
   --accent-glow: rgba(0,0,0,0.05);
@@ -938,7 +938,7 @@ body {
 
 /* SIDEBAR */
 .sidebar {
-  width: 250px;
+  width: 280px;
   border-right: 1px solid var(--card-border);
   padding: 32px 20px;
   display: flex;
@@ -2480,4 +2480,151 @@ input:checked + .slider:before { transform: translateX(20px); }
   0% { transform: scale(0); opacity: 0; }
   60% { transform: scale(1.1); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- FAQ Accordion --- */
+.faq-accordion details {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.faq-accordion details[open] {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.faq-accordion summary {
+  padding: 18px 20px;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #fff;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+.faq-accordion summary::-webkit-details-marker {
+  display: none;
+}
+.faq-accordion summary::after {
+  content: '+';
+  font-size: 1.5rem;
+  color: #60a5fa;
+  transition: transform 0.3s ease;
+}
+.faq-accordion details[open] summary::after {
+  content: '-';
+  transform: rotate(180deg);
+}
+.faq-accordion .faq-content {
+  padding: 0 20px 20px 20px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+body.theme-light .faq-accordion details {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+body.theme-light .faq-accordion summary {
+  color: #000;
+}
+body.theme-light .faq-accordion details[open] {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* --- MOBILE OPTIMIZATION ENHANCEMENTS --- */
+@media (max-width: 600px) {
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .sidebar-nav {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-bottom: 0px;
+  }
+  .nav-item {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+  .global-header {
+    margin: -10px -10px 15px -10px;
+    padding: 15px;
+    border-radius: 0;
+  }
+  .search-container {
+    padding: 10px 15px;
+  }
+  #globalSearchInput {
+    font-size: 0.9rem !important;
+  }
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+    font-size: 24px;
+  }
+  .modal-content {
+    padding: 20px !important;
+    margin: 10px;
+    width: 95%;
+  }
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  .glass-card {
+    padding: 15px !important;
+  }
+  .header-user-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .header-user-actions .icon-btn {
+    font-size: 1.2rem;
+  }
+  #notificationPopup {
+    width: 100% !important;
+    right: 0 !important;
+    left: 0 !important;
+    top: 50px !important;
+  }
+}
+
+/* --- USER CHIP HIGHLIGHT --- */
+.user-chip {
+  padding: 6px 14px;
+  background: var(--primary-accent);
+  color: #ffffff;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Light Theme Header Fixes */
+body.theme-light .global-header {
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+body.theme-light .search-container {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+body.theme-light .search-container input,
+body.theme-light .search-container span {
+  color: #000;
+}
+body.theme-light .search-container input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+body.theme-light .header-user-actions .icon-btn {
+  color: #000;
 }
