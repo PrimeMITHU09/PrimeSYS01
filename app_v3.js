@@ -168,40 +168,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     isInitialLoad = false;
                   } else {
                     // This is a remote update from another device!
-                    showToast("📱 Data synced from another device in background!", "success");
+                    showToast("📱 Live sync from another device!", "success");
                     
-                    // Show a sticky refresh banner
-                    let syncBanner = document.getElementById("syncUpdateBanner");
-                    if (!syncBanner) {
-                      syncBanner = document.createElement("div");
-                      syncBanner.id = "syncUpdateBanner";
-                      syncBanner.style.position = "fixed";
-                      syncBanner.style.bottom = "20px";
-                      syncBanner.style.left = "50%";
-                      syncBanner.style.transform = "translateX(-50%)";
-                      syncBanner.style.background = "linear-gradient(135deg, #10b981, #059669)";
-                      syncBanner.style.color = "#fff";
-                      syncBanner.style.padding = "12px 24px";
-                      syncBanner.style.borderRadius = "30px";
-                      syncBanner.style.boxShadow = "0 10px 25px rgba(16, 185, 129, 0.4)";
-                      syncBanner.style.zIndex = "9999";
-                      syncBanner.style.display = "flex";
-                      syncBanner.style.alignItems = "center";
-                      syncBanner.style.gap = "15px";
-                      syncBanner.style.cursor = "pointer";
-                      syncBanner.style.fontWeight = "500";
-                      
-                      syncBanner.innerHTML = `
-                        <span>🔄 New data synced from your other device!</span>
-                        <button style="background: rgba(255,255,255,0.2); border: none; color: #fff; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold;">Refresh Now</button>
-                      `;
-                      
-                      syncBanner.addEventListener("click", () => {
-                        window.location.reload();
-                      });
-                      
-                      document.body.appendChild(syncBanner);
-                    }
+                    // Dispatch a global event so that all open modules can update their UI instantly
+                    window.dispatchEvent(new CustomEvent('sync-update', { detail: dbData }));
                   }
                 } // End if (!doc.metadata.hasPendingWrites)
               } // End if (doc.exists)
@@ -706,30 +676,28 @@ function initNotepadModule(userData) {
     saveToListBtn.addEventListener("click", async () => {
       if (!activeNoteId || !userNotes[activeNoteId]) return;
       const currentContent = document.getElementById("notepadArea").value;
-      const now = new Date();
-      const dateStr = now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-      const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-      const newTitle = `📌 ${userNotes[activeNoteId].title} — ${dateStr} ${timeStr}`;
-
-      const noteId = "note_" + Math.random().toString(36).substr(2, 9);
-      const savedNote = {
-        id: noteId,
-        title: newTitle,
-        content: currentContent,
-        lastUpdated: new Date().toISOString(),
-        pinned: true
-      };
-      userNotes[noteId] = savedNote;
-
-      updateSyncStatus(notepadSyncStatus, "Saving to list...", "updating");
+      const noteTitle = userNotes[activeNoteId].title || "Untitled Note";
+      
+      const db = getLocalData();
+      if (!db.todoList) db.todoList = [];
+      
+      db.todoList.unshift({
+        text: `From Note [${noteTitle}]: ${currentContent.substring(0, 50)}${currentContent.length > 50 ? '...' : ''}`,
+        completed: false,
+        date: Date.now()
+      });
+      
+      updateSyncStatus(notepadSyncStatus, "Sending to To-Do...", "updating");
       try {
-        await updateLocalData({ notesList: userNotes });
-        renderNotesList();
-        showToast("📌 Note Pinned Permanently!", "success");
-        updateSyncStatus(notepadSyncStatus, "💾 Saved to list", "success");
+        await updateLocalData({ todoList: db.todoList });
+        // Dispatch local sync update to immediately update the To-Do list UI
+        window.dispatchEvent(new CustomEvent('sync-update', { detail: db }));
+        
+        showToast("✅ Note sent to To-Do List!", "success");
+        updateSyncStatus(notepadSyncStatus, "☁ Saved to Cloud", "success");
       } catch (err) {
         console.error("Save to list error:", err);
-        showToast("❌ Failed to save to list", "danger");
+        showToast("❌ Failed to send to To-Do List", "danger");
         updateSyncStatus(notepadSyncStatus, "❌ Save failed", "danger");
       }
     });
@@ -741,6 +709,18 @@ function initNotepadModule(userData) {
   if (autoSelectIds.length > 0) {
     selectNote(autoSelectIds[0]);
   }
+  
+  window.addEventListener('sync-update', (e) => {
+    userNotes = e.detail.notesList || {};
+    renderNotesList();
+    if (activeNoteId && userNotes[activeNoteId]) {
+      const ta = document.getElementById("notepadArea");
+      if (document.activeElement !== ta) {
+         ta.value = userNotes[activeNoteId].content || "";
+         document.getElementById("activeNoteTitle").textContent = userNotes[activeNoteId].title || "Untitled Note";
+      }
+    }
+  });
 }
 
 function renderAttentionCommentCard(userData) {
@@ -785,7 +765,7 @@ function initCalculatorHub(userData) {
   const calcScreen = document.getElementById("calcScreen");
   const historyLogList = document.getElementById("historyLogList");
 
-  calculationHistory = userData.calcHistory || [];
+  let calculationHistory = userData.calcHistory || [];
   
   const renderHistory = () => {
     historyLogList.innerHTML = "";
@@ -978,6 +958,11 @@ function initCalculatorHub(userData) {
   });
 
   renderHistory();
+  
+  window.addEventListener('sync-update', (e) => {
+    calculationHistory = e.detail.calcHistory || [];
+    renderHistory();
+  });
 }
 
 // --- DEVICE SYSTEM INFO MODULE ---
@@ -1482,7 +1467,7 @@ function initTimerModule() {
 // --- 2.5 MUSIC LOUNGE ---
 function initMusicModule() {
   const db = getLocalData();
-  if(!db.musicHistory) db.musicHistory = [];
+  let musicHistory = db.musicHistory || [];
 
   // Sub-tab logic
   const subTabBtns = document.querySelectorAll(".music-sub-tab-btn");
@@ -1558,10 +1543,10 @@ function initMusicModule() {
 
   function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.ENDED) {
-      if (db.musicHistory.length > 0 && currentPlayingIndex >= 0) {
+      if (musicHistory.length > 0 && currentPlayingIndex >= 0) {
         // Auto-play the NEXT track in history (index + 1)
         let nextIndex = currentPlayingIndex + 1;
-        if (nextIndex >= db.musicHistory.length) {
+        if (nextIndex >= musicHistory.length) {
           nextIndex = 0; // Loop back to the first track
         }
         playFromHistory(nextIndex);
@@ -1572,12 +1557,12 @@ function initMusicModule() {
   function renderHistory() {
     if(!historyList) return;
     historyList.innerHTML = "";
-    if(db.musicHistory.length === 0) {
+    if(musicHistory.length === 0) {
       historyList.innerHTML = `<p style="opacity:0.5; font-size:0.9rem; text-align:center;">No recent tracks</p>`;
       return;
     }
     
-    db.musicHistory.forEach((track, i) => {
+    musicHistory.forEach((track, i) => {
       const div = document.createElement("div");
       div.className = "music-history-item";
       
@@ -1604,7 +1589,7 @@ function initMusicModule() {
       removeBtn.onmouseleave = () => removeBtn.style.color = "var(--text-secondary)";
       removeBtn.onclick = (e) => {
         e.stopPropagation();
-        db.musicHistory.splice(i, 1);
+        musicHistory.splice(i, 1);
         
         // Adjust playing index on deletion
         if (currentPlayingIndex === i) {
@@ -1613,7 +1598,7 @@ function initMusicModule() {
           currentPlayingIndex--;
         }
 
-        updateLocalData({ musicHistory: db.musicHistory });
+        updateLocalData({ musicHistory });
         renderHistory();
       };
 
@@ -1628,9 +1613,9 @@ function initMusicModule() {
   }
 
   function playFromHistory(index) {
-    if (index < 0 || index >= db.musicHistory.length) return;
+    if (index < 0 || index >= musicHistory.length) return;
     currentPlayingIndex = index;
-    const track = db.musicHistory[index];
+    const track = musicHistory[index];
     
     if (ytPlayer && ytPlayer.loadVideoById) {
       if (track.type === "vid") {
@@ -1643,9 +1628,9 @@ function initMusicModule() {
   }
 
   function addHistory(title, query, type) {
-    const existingIdx = db.musicHistory.findIndex(t => t.query === query);
+    const existingIdx = musicHistory.findIndex(t => t.query === query);
     if(existingIdx !== -1) {
-      db.musicHistory.splice(existingIdx, 1);
+      musicHistory.splice(existingIdx, 1);
       if (currentPlayingIndex === existingIdx) {
         currentPlayingIndex = 0;
       } else if (currentPlayingIndex > existingIdx) {
@@ -1653,7 +1638,7 @@ function initMusicModule() {
       }
     }
     
-    db.musicHistory.unshift({ title, query, type });
+    musicHistory.unshift({ title, query, type });
     
     if (currentPlayingIndex !== -1 && existingIdx !== currentPlayingIndex) {
       currentPlayingIndex++;
@@ -1963,6 +1948,11 @@ function initExpenseModule() {
   });
   
   render();
+  
+  window.addEventListener('sync-update', (e) => {
+    db.expenses = e.detail.expenses || [];
+    render();
+  });
 }
 
 // --- 5. MUSIC LOUNGE (BACKGROUND RADIO) ---
@@ -2039,7 +2029,7 @@ function initThemeManager(userData) {
 
 // --- TO-DO LIST MODULE ---
 function initTodoModule(userData) {
-  const todoList = userData.todoList || [];
+  let todoList = userData.todoList || [];
   const container = document.getElementById("todoListContainer");
   const input = document.getElementById("todoInput");
   const btn = document.getElementById("addTodoBtn");
@@ -2090,12 +2080,18 @@ function initTodoModule(userData) {
       if (e.key === "Enter") btn.click();
     });
   }
+  
+  window.addEventListener('sync-update', (e) => {
+    todoList = e.detail.todoList || [];
+    render();
+  });
+  
   render();
 }
 
 // --- BOOKMARKS MODULE ---
 function initBookmarkModule(userData) {
-  const bookmarks = userData.bookmarks || [];
+  let bookmarks = userData.bookmarks || [];
   const container = document.getElementById("bookmarkGrid");
   const titleInput = document.getElementById("bmTitleInput");
   const urlInput = document.getElementById("bmUrlInput");
@@ -2146,6 +2142,12 @@ function initBookmarkModule(userData) {
       render();
     });
   }
+  
+  window.addEventListener('sync-update', (e) => {
+    bookmarks = e.detail.bookmarks || [];
+    render();
+  });
+  
   render();
 }
 
