@@ -2508,28 +2508,63 @@ document.addEventListener("DOMContentLoaded", () => {
       
       // Search App Pages / A2Z
       const pages = [
-        { title: "Notepad / Notes Editor", tab: "notepadTab" },
-        { title: "Organizer / Tasks / Todo List", tab: "organizerTab" },
-        { title: "Weather Forecast / Information", tab: "organizerTab" },
-        { title: "Focus Timer / Pomodoro", tab: "organizerTab" },
-        { title: "Calculator / Math / Basic / Standard / Scientific", tab: "calculatorTab" },
-        { title: "Business Calculator / Margin / Profit", tab: "calculatorTab", sub: "calcBusinessPanel" },
-        { title: "Music Lounge / YouTube Player", tab: "mediaTab" },
-        { title: "Profile / Identity & Settings", tab: "profileTab" },
-        { title: "Theme & Display Settings", tab: "profileTab", subBtn: "themeSettingsContent" },
-        { title: "System Hardware & Device Info", tab: "profileTab", subBtn: "deviceInfoContent" }
+        // 1. Office Tools
+        { title: "Office Tools", tab: "officeTab" },
+        { title: "Notepad / Notes Editor / PrimeON", tab: "officeTab", rootSub: "notepadTab" },
+        { title: "Calculator / Math", tab: "officeTab", rootSub: "calcTab" },
+        { title: "Business Calculator / Margin / Profit", tab: "officeTab", rootSub: "calcTab", mode: "business" },
+        { title: "Scientific Calculator", tab: "officeTab", rootSub: "calcTab", mode: "scientific" },
+        { title: "Standard Calculator", tab: "officeTab", rootSub: "calcTab", mode: "standard" },
+        { title: "Basic Calculator", tab: "officeTab", rootSub: "calcTab", mode: "basic" },
+        
+        // 2. Organizer
+        { title: "Organizer", tab: "organizerTab" },
+        { title: "Tasks / To-Do List / Manager", tab: "organizerTab", rootSub: "todoTab" },
+        { title: "Bookmarks / Quick Links", tab: "organizerTab", rootSub: "bookmarkTab" },
+        
+        // 3. Daily Tracker
+        { title: "Daily Tracker", tab: "trackerTab" },
+        { title: "Finance Tools", tab: "trackerTab", rootSub: "financeTab" },
+        { title: "Expenses / Income / Finance Tracker", tab: "trackerTab", rootSub: "financeTab", innerSub: "expenseContent" },
+        { title: "Unit Converter / Currency / Length / Weight / Temperature", tab: "trackerTab", rootSub: "financeTab", innerSub: "converterContent" },
+        { title: "Weather Forecast / Environment Hub / Clock", tab: "trackerTab", rootSub: "weatherTab" },
+        { title: "Focus Timer / Pomodoro", tab: "trackerTab", rootSub: "timerTab" },
+        
+        // 4. Media & Downloads
+        { title: "Media & Downloads / Entertainment", tab: "mediaTab" },
+        { title: "Music Lounge / YouTube Player", tab: "mediaTab", rootSub: "musicTab" },
+        { title: "Volume Control / Ambient Sounds", tab: "mediaTab", rootSub: "musicTab", innerSub: "ambientSoundsContent" },
+        { title: "Track Library / Music Library", tab: "mediaTab", rootSub: "musicTab", innerSub: "musicLibraryContent" },
+        { title: "Prime Player / Video Player", tab: "mediaTab", rootSub: "primePlayerTab" },
+        { title: "Video Downloader", tab: "mediaTab", rootSub: "downloadTab" },
+        
+        // 5. Story Prompts
+        { title: "Story Prompts / Video Generator", tab: "storyTab" },
+        
+        // 6. Settings (Profile)
+        { title: "Settings / Profile", tab: "profileTab" },
+        { title: "Identity / Profile Settings", tab: "profileTab", innerSub: "profileSettingsContent" },
+        { title: "Theme & Display Settings / Appearance", tab: "profileTab", innerSub: "themeSettingsContent" },
+        { title: "System Hardware & Device Info", tab: "profileTab", innerSub: "deviceInfoContent" },
+        { title: "Data Backup / Restore / Terminate Session", tab: "profileTab", innerSub: "terminateSessionContent" }
       ];
 
       pages.forEach(p => {
         if (p.title.toLowerCase().includes(q)) {
           addResult("🌐 App Page", p.title.split(" / ")[0], () => {
+            // Main Tab
             document.querySelector(`[data-tab="${p.tab}"]`)?.click();
-            if (p.sub) {
-               // specific for calc panels where pill is data-mode
-               setTimeout(() => document.querySelector(`[data-mode="business"]`)?.click(), 100);
+            // Root Sub-Tab
+            if (p.rootSub) {
+               setTimeout(() => document.querySelector(`[data-subtab="${p.rootSub}"]`)?.click(), 50);
             }
-            if (p.subBtn) {
-               setTimeout(() => document.querySelector(`[data-subtab="${p.subBtn}"]`)?.click(), 100);
+            // Inner Sub-Tab
+            if (p.innerSub) {
+               setTimeout(() => document.querySelector(`[data-subtab="${p.innerSub}"]`)?.click(), 100);
+            }
+            // Calculator Mode
+            if (p.mode) {
+               setTimeout(() => document.querySelector(`[data-mode="${p.mode}"]`)?.click(), 150);
             }
           });
           resultsCount++;
