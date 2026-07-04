@@ -1647,11 +1647,11 @@ function initMusicModule() {
     }
     
     // Warning at 100 tracks (no hard limit removal pop)
-    if(db.musicHistory.length === 100) {
+    if(musicHistory.length === 100) {
       showToast("Warning: You have reached 100 saved tracks! Consider cleaning up your library.", "warning");
     }
     
-    updateLocalData({ musicHistory: db.musicHistory });
+    updateLocalData({ musicHistory: musicHistory });
     renderHistory();
   }
 
