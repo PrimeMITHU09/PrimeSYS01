@@ -2739,6 +2739,7 @@ document.addEventListener("DOMContentLoaded", () => {
           sidebar.classList.remove("open");
           overlay.classList.add("hidden");
         }
+      });
     });
   }
 });
