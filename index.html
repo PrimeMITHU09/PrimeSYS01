@@ -113,8 +113,11 @@
       <!-- DASHBOARD CONTAINER -->
       <div id="dashboardContainer" class="dashboard-layout fade-in">
         
+        <!-- Mobile Overlay -->
+        <div id="mobileSidebarOverlay" class="mobile-overlay hidden"></div>
+
         <!-- Left Sidebar Navigation -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="appSidebar">
           <div class="logo" id="dashboardLogo" style="cursor: pointer;" title="Refresh Dashboard">
             <img src="icon.svg" style="width:30px; height:30px; margin-right:8px; border-radius: 6px;"> PrimeSYS
           </div>
@@ -166,6 +169,7 @@
         <section class="content-panel">
           <!-- Global Header -->
             <header class="global-header sticky-header" style="position: relative;">
+              <button id="mobileMenuBtn" class="icon-btn mobile-only-btn" style="display: none; font-size: 1.5rem; margin-right: 10px; padding: 5px 10px;">☰</button>
               <div class="search-container" style="flex: 1; max-width: 500px; border-radius: 25px;">
                 <span style="font-size: 1.2rem; margin-right: 10px;">🔍</span>
                 <input type="text" id="globalSearchInput" placeholder="Search notes, tasks, expenses..." style="width: 100%; border: none; background: transparent; color: var(--text-primary); outline: none; font-size: 1rem;">

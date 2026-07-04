@@ -2628,3 +2628,132 @@ body.theme-light .search-container input::placeholder {
 body.theme-light .header-user-actions .icon-btn {
   color: #000;
 }
+
+/* --- MOBILE RESPONSIVENESS (ADDED) --- */
+@media (max-width: 768px) {
+  /* Show Mobile Menu Button */
+  .mobile-only-btn {
+    display: inline-block !important;
+  }
+
+  /* Dashboard Layout */
+  .dashboard-layout {
+    grid-template-columns: 1fr !important;
+    display: block !important;
+  }
+
+  /* Sidebar Mobile Overlay */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    height: 100vh;
+    width: 280px;
+    z-index: 10000;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  /* Full Screen Overlay */
+  .mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+    transition: opacity 0.3s ease;
+  }
+  
+  .mobile-overlay.hidden {
+    display: none;
+    opacity: 0;
+  }
+
+  /* Fix App Container */
+  .app-container {
+    padding: 5px;
+  }
+  
+  .glass-card#mainCard {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  /* Content Panel Spacing */
+  .content-panel {
+    padding: 5px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Header adjustments */
+  .global-header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .search-container {
+    flex: 1 1 100%;
+    order: 3;
+    margin-top: 10px;
+  }
+
+  /* Tabs Scrollable */
+  .root-sub-tab-pane > div:first-of-type,
+  .mode-pill-container, 
+  .tool-tabs {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 5px;
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+    justify-content: flex-start !important;
+  }
+  .mode-pill-container::-webkit-scrollbar, 
+  .tool-tabs::-webkit-scrollbar,
+  .root-sub-tab-pane > div:first-of-type::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Login screen */
+  .login-card {
+    width: 90%;
+    padding: 20px;
+  }
+
+  /* Stack Modals */
+  .modal-content, .notepad-modal, .calculator-modal {
+    width: 95% !important;
+    max-width: 95% !important;
+    padding: 15px;
+  }
+  
+  /* Music Lounge */
+  .music-wrapper {
+    flex-direction: column !important;
+  }
+  .youtube-player-wrapper {
+    height: 300px !important;
+  }
+  
+  /* Tools Grid */
+  .tools-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Dashboard summary grid */
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

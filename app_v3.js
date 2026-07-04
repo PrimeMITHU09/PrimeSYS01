@@ -2701,3 +2701,37 @@ setTimeout(() => {
     // Auto-detect pasted YouTube links feature removed to prevent auto-play on paste
   }
 }, 1000);
+
+// --- MOBILE MENU LOGIC ---
+document.addEventListener("DOMContentLoaded", () => {
+  const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+  const sidebar = document.getElementById("appSidebar");
+  const overlay = document.getElementById("mobileSidebarOverlay");
+  const navItems = document.querySelectorAll(".sidebar-nav .nav-item");
+
+  function toggleMobileMenu() {
+    if (sidebar && overlay) {
+      sidebar.classList.toggle("open");
+      overlay.classList.toggle("hidden");
+    }
+  }
+
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener("click", toggleMobileMenu);
+  }
+  if (overlay) {
+    overlay.addEventListener("click", toggleMobileMenu);
+  }
+  
+  if (navItems) {
+    // Close sidebar on mobile when a nav item is clicked
+    navItems.forEach(item => {
+      item.addEventListener("click", () => {
+        if (window.innerWidth <= 768 && sidebar && overlay) {
+          sidebar.classList.remove("open");
+          overlay.classList.add("hidden");
+        }
+      });
+    });
+  }
+});
