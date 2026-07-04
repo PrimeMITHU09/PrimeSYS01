@@ -137,6 +137,8 @@ document.addEventListener("DOMContentLoaded", () => {
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         // Logged In
+        const landingPage = document.getElementById("landingPage");
+        if (landingPage) landingPage.style.display = "none";
         if (loginScreen) loginScreen.classList.add("hidden");
         
         let name = user.displayName;
@@ -193,7 +195,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } else {
         // Logged Out
-        if (loginScreen) loginScreen.classList.remove("hidden");
+        const landingPage = document.getElementById("landingPage");
+        if (landingPage && !landingPage.classList.contains("hidden")) {
+          // Landing page is active, do not show login screen yet
+          if (loginScreen) loginScreen.classList.add("hidden");
+        } else {
+          if (loginScreen) loginScreen.classList.remove("hidden");
+        }
         if (dashboardMainContainer) dashboardMainContainer.classList.add("hidden");
       }
     });
@@ -2731,7 +2739,53 @@ document.addEventListener("DOMContentLoaded", () => {
           sidebar.classList.remove("open");
           overlay.classList.add("hidden");
         }
-      });
     });
+  }
+});
+
+// --- LANDING PAGE LOGIC ---
+document.addEventListener("DOMContentLoaded", () => {
+  const landingPage = document.getElementById("landingPage");
+  const loginScreen = document.getElementById("firebaseLoginScreen");
+  const downloadBtn = document.getElementById("landingDownloadBtn");
+  const footerDownloadBtn = document.getElementById("landingFooterDownloadBtn");
+  const osNameSpan = document.getElementById("landingOsName");
+
+  if (landingPage && loginScreen) {
+    // Basic OS Detection
+    let userOS = "Windows (x64/x86)";
+    const platform = window.navigator.platform.toLowerCase();
+    const userAgent = window.navigator.userAgent.toLowerCase();
+
+    if (userAgent.indexOf("android") !== -1) {
+      userOS = "Android";
+    } else if (userAgent.indexOf("iphone") !== -1 || userAgent.indexOf("ipad") !== -1) {
+      userOS = "Apple (iOS)";
+    } else if (platform.indexOf("mac") !== -1) {
+      userOS = "Apple (macOS)";
+    } else if (platform.indexOf("win") !== -1) {
+      userOS = "Windows (x64/x86)";
+    } else if (platform.indexOf("linux") !== -1) {
+      userOS = "Linux";
+    }
+
+    if (osNameSpan) {
+      osNameSpan.textContent = userOS;
+    }
+
+    function goToLogin() {
+      landingPage.classList.add("hidden");
+      setTimeout(() => {
+        landingPage.style.display = "none";
+        loginScreen.classList.remove("hidden");
+      }, 500); // Wait for CSS transition
+    }
+
+    if (downloadBtn) {
+      downloadBtn.addEventListener("click", goToLogin);
+    }
+    if (footerDownloadBtn) {
+      footerDownloadBtn.addEventListener("click", goToLogin);
+    }
   }
 });
